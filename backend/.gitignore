@@ -1,0 +1,17 @@
+# dependencies
+node_modules/
+
+# env / secrets — NEVER commit these
+.env
+.env.local
+.env.*.local
+
+# build output
+build/
+dist/
+
+# logs & os files
+*.log
+npm-debug.log*
+.DS_Store
+.vercel
