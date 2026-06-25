@@ -21,7 +21,7 @@ export default function Footer() {
             </div>
             <div className="mt-4 space-y-1">
               <a href="tel:123456790" className="flex items-center gap-2 text-sm hover:text-accent transition-colors">
-                <span className="text-accent">✆</span> 1234567890
+                <span className="text-accent">✆</span> +4915124261124
               </a>
               <a href="mailto:wertimmoverwaltung@outlook.com" className="flex items-center gap-2 text-sm hover:text-accent transition-colors">
                 <span className="text-accent">✉</span> wertimmoverwaltung@outlook.com

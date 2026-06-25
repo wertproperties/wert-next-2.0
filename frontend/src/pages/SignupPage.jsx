@@ -75,7 +75,7 @@ export default function SignupPage() {
             />
             <div className="text-left">
               <p className="font-black text-slate-900 text-base tracking-tight">WERT</p>
-              <p className="text-yellow-700 text-[10px] tracking-widest uppercase">Property Management</p>
+              <p className="text-yellow-700 text-[10px] tracking-widest uppercase">Immobilieverwaltung</p>
             </div>
           </Link>
         </div>
