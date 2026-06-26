@@ -48,30 +48,30 @@ const translations = {
       learnMore: 'Learn More',
       ctaAll: 'All Services',
       items: [
+        // {
+        //   title: 'Residential Property Management',
+        //   desc: 'We provide comprehensive management for apartment buildings and private properties – from billing to tenant support.',
+        //   bullets: [],
+        // },
+        // {
+        //   title: 'Commercial Property Management',
+        //   desc: 'Management of office, retail, and commercial properties with a focus on efficiency, structure, and smooth operations.',
+        //   bullets: [],
+        // },
         {
-          title: 'Residential Property Management',
-          desc: 'We provide comprehensive management for apartment buildings and private properties – from billing to tenant support.',
-          bullets: [],
-        },
-        {
-          title: 'Commercial Property Management',
-          desc: 'Management of office, retail, and commercial properties with a focus on efficiency, structure, and smooth operations.',
-          bullets: [],
-        },
-        {
-          title: 'Business Administration',
+          title: 'WEG Management',
           desc: '',
-          bullets: ['Rent and payment monitoring', 'Utility billing', 'Dunning', 'Contract management'],
+          bullets: ['Organization of owners meetings', 'Budget planning and annual financial statements', 'Implementation of resolutions', 'Maintenance planning', 'Management of service providers', 'Transparent communication with owners'],
         },
         {
-          title: 'Technical Management',
+          title: 'Individual Unit Management',
           desc: '',
-          bullets: ['Maintenance and repairs', 'Coordination of tradespeople', 'Regular property inspections', 'Planning of maintenance measures'],
+          bullets: ['Tenant relations', 'Rent collection and dunning', 'Service charge accounting', 'Commissioning and supervision of repairs', 'Apartment handovers', 'Regular reports for owners'],
         },
         {
-          title: 'Tenant & User Support',
+          title: 'Rental Management',
           desc: '',
-          bullets: ['Your point of contact for all matters', 'Fast resolution of issues', 'Organization of handovers'],
+          bullets: ['Marketing of vacant apartments', 'Credit checks for new tenants', 'Drafting of lease agreements', 'Ongoing management of the tenancy', 'Rent increases in accordance with statutory regulations', 'Management of lease terminations and handovers'],
         },
       ],
     },
@@ -252,30 +252,30 @@ const translations = {
       learnMore: 'Mehr erfahren',
       ctaAll: 'Alle Leistungen',
       items: [
+        // {
+        //   title: 'Wohnimmobilienverwaltung',
+        //   desc: 'Wir bieten umfassende Verwaltung für Mehrfamilienhäuser und Privatimmobilien – von der Abrechnung bis zur Mieterbetreuung.',
+        //   bullets: [],
+        // },
+        // {
+        //   title: 'Gewerbeimmobilienverwaltung',
+        //   desc: 'Verwaltung von Büro-, Einzel- und Gewerbeobjekten mit Fokus auf Effizienz, Struktur und reibungslosen Betrieb.',
+        //   bullets: [],
+        // },
         {
-          title: 'Wohnimmobilienverwaltung',
-          desc: 'Wir bieten umfassende Verwaltung für Mehrfamilienhäuser und Privatimmobilien – von der Abrechnung bis zur Mieterbetreuung.',
-          bullets: [],
-        },
-        {
-          title: 'Gewerbeimmobilienverwaltung',
-          desc: 'Verwaltung von Büro-, Einzel- und Gewerbeobjekten mit Fokus auf Effizienz, Struktur und reibungslosen Betrieb.',
-          bullets: [],
-        },
-        {
-          title: 'Kaufmännische Verwaltung',
+          title: 'WEG-Verwaltung',
           desc: '',
-          bullets: ['Mieten- und Zahlungsüberwachung', 'Nebenkostenabrechnung', 'Mahnwesen', 'Vertragsmanagement'],
+          bullets: ['Organisation der Eigentümerversammlungen', 'Wirtschaftsplan und Jahresabrechnung', 'Umsetzung von Beschlüssen', 'Instandhaltungsplanung', ' Betreuung von Dienstleistern', 'Transparente Kommunikation mit Eigentümern'],
         },
         {
-          title: 'Technische Verwaltung',
+          title: 'Sondereigentumsverwaltung',
           desc: '',
-          bullets: ['Instandhaltung und Reparaturen', 'Koordination von Handwerkern', 'Regelmäßige Objektbegehungen', 'Planung von Instandhaltungsmaßnahmen'],
+          bullets: ['Mieterbetreuung', 'Mietinkasso und Mahnwesen', 'Betriebskostenabrechnung', 'Beauftragung und Überwachung von Reparaturen', 'Wohnungsübergaben und -abnahmen', 'Regelmäßige Berichte für Eigentümer'],
         },
         {
-          title: 'Mieter- & Nutzerbetreuung',
+          title: 'Mietverwaltung',
           desc: '',
-          bullets: ['Ihr Ansprechpartner für alle Belange', 'Schnelle Problemlösung', 'Organisation von Übergaben'],
+          bullets: ['Vermarktung freier Wohnungen', 'Bonitätsprüfung neuer Mieter', 'Erstellung von Mietverträgen', 'Laufende Betreuung des Mietverhältnisses', 'Mieterhöhungen nach den gesetzlichen Vorgaben', 'Kündigungs- und Übergabemanagement'],
         },
       ],
     },
