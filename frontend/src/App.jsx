@@ -6,6 +6,8 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Chatbot from './components/Chatbot';
 import CookieBanner from './components/CookieBanner';
+import ImpressumPage from './pages/ImpressumPage';
+import DatenschutzPage from './pages/DatenschutzPage';
 
 import HomePage from './pages/HomePage';
 import ServicesPage from './pages/ServicesPage';
@@ -71,6 +73,8 @@ function Layout() {
         <Route path="/services" element={<MainLayout><ServicesPage /></MainLayout>} />
         <Route path="/objects" element={<MainLayout><ObjectsPage /></MainLayout>} />
         <Route path="/contact" element={<MainLayout><ContactPage /></MainLayout>} />
+        <Route path="/impressum" element={<MainLayout><ImpressumPage /></MainLayout>} />
+        <Route path="/datenschutz" element={<MainLayout><DatenschutzPage /></MainLayout>} />
         <Route path="/forms/damage" element={<MainLayout><DamageReportPage /></MainLayout>} />
         <Route path="/forms/key" element={<MainLayout><KeyOrderPage /></MainLayout>} />
         <Route path="/forms/tenant-change" element={<MainLayout><TenantChangePage /></MainLayout>} />
