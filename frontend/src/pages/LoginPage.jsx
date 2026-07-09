@@ -44,7 +44,7 @@ export default function LoginPage() {
             />
             <div className="text-left">
               <p className="font-black text-slate-900 text-xl tracking-tight">WERT</p>
-              <p className="text-yellow-700 text-xs tracking-widest uppercase">Immobilienverwaltung</p>
+              <p className="text-yellow-700 text-xs tracking-widest uppercase">Hausverwaltung</p>
             </div>
           </Link>
         </div>

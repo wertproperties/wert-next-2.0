@@ -224,8 +224,8 @@ const translations = {
     },
     hero: {
       badge: 'Ihr Immobilienverwalter',
-      title: 'WERT Immobilienverwaltung',
-      subtitle: 'Immobilienverwaltung, Die Funktioniert',
+      title: 'WERT Hausverwaltung',
+      subtitle: 'Hausverwaltung, Die Funktioniert',
       bullets: [
         'Wir kümmern uns um die Verwaltung Ihrer Immobilie – damit Sie sich um nichts kümmern müssen.',
         'Wir arbeiten strukturiert, zugänglich und lösungsorientiert.',
@@ -238,9 +238,9 @@ const translations = {
     stats: { years: 'Jahre Erfahrung', gen: 'Generationen', objects: 'Verwaltete Objekte', satisfaction: 'Eigentümerzufriedenheit' },
     about: {
       tag: 'Warum wir?',
-      title: 'WERT — Die Profis in der Immobilienverwaltung',
-      p1: 'Sie suchen eine Verwaltung für Ihre Immobilie? Dann sind Sie bei uns richtig! In Sachen Immobilienverwaltung sind wir Profis — und das bereits seit mehr als 55 Jahren in der dritten Generation.',
-      p2: 'Unser Bestreben ist es, eine Immobilienverwaltung zu gewährleisten, die höchste Zufriedenheit unserer Eigentümer garantiert und nicht nur eine Werterhaltung, sondern auch eine Wertverbesserung der von uns betreuten Gebäude sichert.',
+      title: 'WERT — Die Profis in der Hausverwaltung',
+      p1: 'Sie suchen eine Verwaltung für Ihre Immobilie? Dann sind Sie bei uns richtig! In Sachen Hausverwaltung sind wir Profis — und das bereits seit mehr als 55 Jahren in der dritten Generation.',
+      p2: 'Unser Bestreben ist es, eine Hausverwaltung zu gewährleisten, die höchste Zufriedenheit unserer Eigentümer garantiert und nicht nur eine Werterhaltung, sondern auch eine Wertverbesserung der von uns betreuten Gebäude sichert.',
       points: ['Über 55 Jahre Erfahrung', 'Familienbetrieb in dritter Generation', 'Persönliche und individuelle Betreuung', 'Mitglied im BVI und VDIV'],
       ctaHistory: 'Firmengeschichte',
       ctaTeam: 'Unser Team',
@@ -248,17 +248,17 @@ const translations = {
     services: {
       tag: 'Was wir anbieten',
       title: 'Unsere Leistungen',
-      subtitle: 'Umfassende Immobilienverwaltungsleistungen – alles aus einer kompetenten Hand.',
+      subtitle: 'Umfassende Hausverwaltungsleistungen – alles aus einer kompetenten Hand.',
       learnMore: 'Mehr erfahren',
       ctaAll: 'Alle Leistungen',
       items: [
         // {
-        //   title: 'Wohnimmobilienverwaltung',
+        //   title: 'WohnHausverwaltung',
         //   desc: 'Wir bieten umfassende Verwaltung für Mehrfamilienhäuser und Privatimmobilien – von der Abrechnung bis zur Mieterbetreuung.',
         //   bullets: [],
         // },
         // {
-        //   title: 'Gewerbeimmobilienverwaltung',
+        //   title: 'GewerbeHausverwaltung',
         //   desc: 'Verwaltung von Büro-, Einzel- und Gewerbeobjekten mit Fokus auf Effizienz, Struktur und reibungslosen Betrieb.',
         //   bullets: [],
         // },
@@ -312,7 +312,7 @@ const translations = {
       link: 'Die zehn Berufsgrundsätze',
     },
     footer: {
-      desc: 'Ihr verlässlicher Partner für professionelle Immobilienverwaltung seit über 55 Jahren.',
+      desc: 'Ihr verlässlicher Partner für professionelle Hausverwaltung seit über 55 Jahren.',
       navigation: 'Navigation',
       legal: 'Rechtliches',
       links: { impressum: 'Impressum', datenschutz: 'Datenschutz', info: 'Informationspflicht', verfahren: 'Öffentliches Verfahrensverzeichnis' },
@@ -338,7 +338,7 @@ const translations = {
       services: {
         tag: 'Unsere Leistungen',
         title: 'Leistungen für Eigentümer',
-        heroDesc: 'Umfassende Immobilienverwaltungsleistungen — alles aus einer Hand.',
+        heroDesc: 'Umfassende Hausverwaltungsleistungen — alles aus einer Hand.',
         wohnTab: 'Wohnungseigentum',
         mietTab: 'Mietverwaltung',
       },
@@ -374,7 +374,7 @@ const translations = {
       vdiv: {
         tag: 'Fachverband',
         title: 'VDIV — Verband der Immobilienverwalter',
-        heroDesc: 'Professionelle Interessenvertretung der Immobilienverwaltungsbranche.',
+        heroDesc: 'Professionelle Interessenvertretung der Hausverwaltungsbranche.',
       },
       forms: {
         damage: {
