@@ -86,7 +86,7 @@ export default function Footer() {
           {/* Legal */}
           <div>
             <h4 className="text-white font-bold text-xs uppercase tracking-[0.2em] mb-5">
-              Rechtliches
+              {f.legal}
             </h4>
 
             <ul className="space-y-2.5 text-sm">
@@ -96,7 +96,7 @@ export default function Footer() {
                   to="/impressum"
                   className="hover:text-accent transition-colors"
                 >
-                  Impressum
+                  {f.links.impressum}
                 </Link>
               </li>
 
@@ -105,7 +105,7 @@ export default function Footer() {
                   to="/datenschutz"
                   className="hover:text-accent transition-colors"
                 >
-                  Datenschutz
+                  {f.links.datenschutz}
                 </Link>
               </li>
 
