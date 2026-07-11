@@ -73,6 +73,16 @@ const translations = {
           desc: '',
           bullets: ['Marketing of vacant apartments', 'Credit checks for new tenants', 'Drafting of lease agreements', 'Ongoing management of the tenancy', 'Rent increases in accordance with statutory regulations', 'Management of lease terminations and handovers'],
         },
+        {
+          title: 'Commercial Management',
+          desc: 'Management of commercial properties such as offices, shops, or halls.',
+          bullets: [],
+        },
+        {
+          title: 'Mixed-Use Management',
+          desc: 'Management of properties with both residential and commercial units.',
+          bullets: [],
+        },
       ],
     },
     objects: {
@@ -276,6 +286,16 @@ const translations = {
           title: 'Mietverwaltung',
           desc: '',
           bullets: ['Vermarktung freier Wohnungen', 'Bonitätsprüfung neuer Mieter', 'Erstellung von Mietverträgen', 'Laufende Betreuung des Mietverhältnisses', 'Mieterhöhungen nach den gesetzlichen Vorgaben', 'Kündigungs- und Übergabemanagement'],
+        },
+        {
+          title: 'Gewerbeverwaltung',
+          desc: 'Verwaltung von Gewerbeimmobilien wie Büros, Läden oder Hallen.',
+          bullets: [],
+        },
+        {
+          title: 'Mischverwaltung',
+          desc: 'Verwaltung von Immobilien mit Wohn- und Gewerbeeinheiten.',
+          bullets: [],
         },
       ],
     },

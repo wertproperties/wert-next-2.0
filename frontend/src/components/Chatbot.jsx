@@ -379,13 +379,28 @@
 //   );
 // }
 
+
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
 
 // ─── Constants ────────────────────────────────────────────────────
-const POLL_INTERVAL = 3000;
+const SESSION_KEY   = 'wert_chat_session';
+const VISITOR_KEY   = 'wert_chat_visitor';
+const POLL_INTERVAL = 3000; // ms — poll every 3 seconds for new admin replies
 const API_BASE      = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+
+function getOrCreateSession() {
+  let id = sessionStorage.getItem(SESSION_KEY);
+  if (!id) {
+    id = 'sess_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+    sessionStorage.setItem(SESSION_KEY, id);
+  }
+  return id;
+}
+
+function getVisitor() {
+  try { return JSON.parse(localStorage.getItem(VISITOR_KEY) || '{}'); } catch { return {}; }
+}
+function saveVisitor(v) { localStorage.setItem(VISITOR_KEY, JSON.stringify(v)); }
 
 // ─── Icons ────────────────────────────────────────────────────────
 const ChatIcon = () => (
@@ -408,86 +423,84 @@ const MinIcon = () => (
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4"/>
   </svg>
 );
-const LockIcon = () => (
-  <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-  </svg>
-);
 
-// ─── Login Required Popup ─────────────────────────────────────────
-function LoginRequiredPopup({ onClose, onLogin }) {
+// ─── Visitor info form (name + mobile number only, shown first time) ─
+function VisitorForm({ onSubmit }) {
+  const [name, setName]   = useState('');
+  const [phone, setPhone] = useState('');
+  const [touched, setTouched] = useState(false);
+
+  const handle = e => {
+    e.preventDefault();
+    setTouched(true);
+    if (!name.trim() || !phone.trim()) return;
+    onSubmit({ name: name.trim(), phone: phone.trim() });
+  };
+
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-fadeIn">
-        <div className="bg-amber-500 px-6 py-5 text-white text-center">
-          <div className="flex justify-center mb-2 opacity-90"><LockIcon /></div>
-          <h2 className="font-black text-xl tracking-tight">Login erforderlich</h2>
-          <p className="text-amber-100 text-sm mt-1">Login Required</p>
+    <div className="flex-1 flex flex-col justify-center px-5 py-6 bg-stone-50">
+      <p className="font-bold text-stone-800 text-base mb-1">Willkommen! / Welcome!</p>
+      <p className="text-stone-500 text-sm mb-5">
+        Bitte geben Sie Ihren Namen und Ihre Handynummer an, damit wir Ihnen helfen können.<br />
+        <span className="text-xs">(Please enter your name and mobile number so we can assist you.)</span>
+      </p>
+      <form onSubmit={handle} className="space-y-3">
+        <div>
+          <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-1">Name</label>
+          <input
+            value={name} onChange={e => setName(e.target.value)}
+            placeholder="Your name"
+            className="w-full border border-stone-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-amber-400 bg-white"
+          />
+          {touched && !name.trim() && (
+            <p className="text-red-500 text-xs mt-1">Bitte geben Sie Ihren Namen ein / Please enter your name</p>
+          )}
         </div>
-        <div className="px-6 py-5 text-center">
-          <p className="text-stone-600 text-sm leading-relaxed mb-1">
-            Um den Support-Chat zu nutzen, müssen Sie angemeldet sein.
-          </p>
-          <p className="text-stone-400 text-xs mb-6">
-            (Please log in to use the support chat.)
-          </p>
-          <button
-            onClick={onLogin}
-            className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-xl text-sm transition-colors mb-3 active:scale-95"
-          >
-            Jetzt anmelden / Login Now →
-          </button>
-          <button
-            onClick={onClose}
-            className="w-full text-stone-400 hover:text-stone-600 text-sm py-2 transition-colors"
-          >
-            Schließen / Close
-          </button>
+        <div>
+          <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-1">
+            Handynummer <span className="text-stone-300 font-normal">(Mobile Number)</span>
+          </label>
+          <input
+            type="tel" value={phone} onChange={e => setPhone(e.target.value)}
+            placeholder="+49 151 12345678"
+            className="w-full border border-stone-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-amber-400 bg-white"
+          />
+          {touched && !phone.trim() && (
+            <p className="text-red-500 text-xs mt-1">Bitte geben Sie Ihre Handynummer ein / Please enter your mobile number</p>
+          )}
         </div>
-      </div>
+        <button type="submit" className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 rounded-lg text-sm transition-colors">
+          Chat starten / Start Chat →
+        </button>
+      </form>
     </div>
   );
 }
 
 // ─── Main Chatbot ─────────────────────────────────────────────────
 export default function Chatbot() {
-  const { user, isLoggedIn, loading } = useAuth();
-  const navigate = useNavigate();
-
-  const sessionId = useRef(null);
+  const sessionId = useRef(getOrCreateSession());
   const [open, setOpen]               = useState(false);
   const [minimized, setMinimized]     = useState(false);
   const [messages, setMessages]       = useState([]);
   const [input, setInput]             = useState('');
   const [sending, setSending]         = useState(false);
   const [unread, setUnread]           = useState(0);
-  const [lastTs, setLastTs]           = useState(null);
+  const [lastTs, setLastTs]           = useState(null);  // timestamp of latest message we have
+  const [visitor, setVisitor]         = useState(getVisitor); // { name, phone }
+  const [started, setStarted]         = useState(false);  // has visitor submitted name/phone form?
   const [error, setError]             = useState(null);
-  const [showLoginPopup, setShowLoginPopup] = useState(false);
-
   const messagesEndRef = useRef(null);
   const inputRef       = useRef(null);
   const pollRef        = useRef(null);
 
-  // Set session ID based on logged-in user's ID
+  // Has visitor already provided their name/phone before?
   useEffect(() => {
-    if (user) {
-      sessionId.current = 'user_' + user._id;
-    } else {
-      sessionId.current = null;
-    }
-  }, [user]);
+    const v = getVisitor();
+    if (v.name && v.phone) { setVisitor(v); setStarted(true); }
+  }, []);
 
-  // Reset chat state on user change
-  useEffect(() => {
-    setMessages([]);
-    setLastTs(null);
-    setUnread(0);
-    setOpen(false);
-  }, [user?._id]);
-
-  // Scroll to bottom
+  // Scroll to bottom when messages change
   useEffect(() => {
     if (open && !minimized) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -497,97 +510,112 @@ export default function Chatbot() {
 
   // Focus input when chat opens
   useEffect(() => {
-    if (open && !minimized && isLoggedIn) {
+    if (open && !minimized && started) {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
-  }, [open, minimized, isLoggedIn]);
+  }, [open, minimized, started]);
 
-  // ── Polling ──────────────────────────────────────────────────────
+  // ── Polling: fetch new messages every 3s ───────────────────────
   const fetchNewMessages = useCallback(async () => {
-    if (!isLoggedIn || !sessionId.current) return;
-    const token = localStorage.getItem('wert_token');
+    if (!started) return;
     try {
       const url = lastTs
         ? `${API_BASE}/chat/messages/${sessionId.current}?after=${encodeURIComponent(lastTs)}`
         : `${API_BASE}/chat/messages/${sessionId.current}`;
-      const res = await fetch(url, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+
+      const res = await fetch(url);
       if (!res.ok) return;
       const json = await res.json();
       const newMsgs = json.data || [];
+
       if (newMsgs.length > 0) {
         setMessages(prev => {
+          // Merge avoiding duplicates by _id
           const ids = new Set(prev.map(m => m._id));
           const toAdd = newMsgs.filter(m => !ids.has(m._id));
           if (toAdd.length === 0) return prev;
           return [...prev, ...toAdd];
         });
         setLastTs(newMsgs[newMsgs.length - 1].createdAt);
+        // Count unread admin replies when window is closed/minimized
         if (!open || minimized) {
           const adminMsgs = newMsgs.filter(m => m.role === 'admin');
           if (adminMsgs.length > 0) setUnread(u => u + adminMsgs.length);
         }
       }
-    } catch { /* silently ignore */ }
-  }, [isLoggedIn, lastTs, open, minimized]);
+    } catch { /* silently ignore network errors */ }
+  }, [started, lastTs, open, minimized]);
 
+  // Load initial messages when session starts
   const loadAllMessages = useCallback(async () => {
-    if (!isLoggedIn || !sessionId.current) return;
-    const token = localStorage.getItem('wert_token');
     try {
-      const res = await fetch(`${API_BASE}/chat/messages/${sessionId.current}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      const res = await fetch(`${API_BASE}/chat/messages/${sessionId.current}`);
       const json = await res.json();
       const msgs = json.data || [];
       setMessages(msgs);
       if (msgs.length > 0) setLastTs(msgs[msgs.length - 1].createdAt);
     } catch { /* ignore */ }
-  }, [isLoggedIn]);
+  }, []);
 
-  // Start polling when chat is open and user is logged in
+  // Start polling when visitor has introduced themselves
   useEffect(() => {
-    if (!isLoggedIn || !open) {
-      clearInterval(pollRef.current);
-      return;
-    }
+    if (!started) return;
     loadAllMessages();
     pollRef.current = setInterval(fetchNewMessages, POLL_INTERVAL);
     return () => clearInterval(pollRef.current);
-  }, [isLoggedIn, open, fetchNewMessages, loadAllMessages]);
+  }, [started, fetchNewMessages, loadAllMessages]);
+
+  // ── Visitor form submit (name + mobile number, no login) ─────────
+  const handleVisitorSubmit = ({ name, phone }) => {
+    const v = { name, phone };
+    setVisitor(v);
+    saveVisitor(v);
+    setStarted(true);
+
+    // Send a greeting message automatically
+    setTimeout(async () => {
+      try {
+        await fetch(`${API_BASE}/chat/message`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sessionId: sessionId.current,
+            text: `Hallo, ich bin ${name} (Tel: ${phone}). Ich brauche Hilfe.`,
+            visitorName: name,
+            visitorEmail: phone, // mobile number is stored via the visitorEmail field
+          }),
+        });
+      } catch { /* ignore */ }
+    }, 500);
+  };
 
   // ── Send message ────────────────────────────────────────────────
   const sendMessage = async () => {
     const text = input.trim();
-    if (!text || sending || !isLoggedIn) return;
+    if (!text || sending) return;
     setInput('');
     setSending(true);
     setError(null);
 
+    // Optimistic UI — add message immediately
     const optimistic = {
       _id: 'temp_' + Date.now(),
       role: 'user',
       text,
       createdAt: new Date().toISOString(),
-      visitorName: user.firstName + ' ' + user.lastName,
+      visitorName: visitor.name,
     };
     setMessages(prev => [...prev, optimistic]);
 
-    const token = localStorage.getItem('wert_token');
     try {
       const res = await fetch(`${API_BASE}/chat/message`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sessionId: sessionId.current,
           text,
-          visitorName: user.firstName + ' ' + user.lastName,
-          visitorEmail: user.email || '',
-          userId: user._id,
+          visitorName: visitor.name || 'Visitor',
+          visitorEmail: visitor.phone || '', // mobile number is stored via the visitorEmail field
         }),
       });
       const json = await res.json();
@@ -606,6 +634,7 @@ export default function Chatbot() {
       }
     } catch {
       setError('Message could not be sent. Please try again.');
+      // Remove optimistic
       setMessages(prev => prev.filter(m => m._id !== optimistic._id));
     } finally {
       setSending(false);
@@ -616,39 +645,21 @@ export default function Chatbot() {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   };
 
-  // ── FAB click ───────────────────────────────────────────────────
-  const handleFabClick = () => {
-    if (open) {
-      setOpen(false);
-      setMinimized(false);
-      return;
-    }
-    if (!isLoggedIn) {
-      setShowLoginPopup(true);
-      return;
-    }
+  const openChat = () => {
     setOpen(true);
     setMinimized(false);
     setUnread(0);
   };
 
-  const fmt = iso => {
+  const fmt = (iso) => {
     try { return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
     catch { return ''; }
   };
 
-  if (loading) return null;
-
   return (
     <>
-      {showLoginPopup && (
-        <LoginRequiredPopup
-          onClose={() => setShowLoginPopup(false)}
-          onLogin={() => { setShowLoginPopup(false); navigate('/login'); }}
-        />
-      )}
-
-      {open && isLoggedIn && (
+      {/* ── Chat window ── */}
+      {open && (
         <div className={`fixed bottom-24 right-6 z-50 flex flex-col shadow-2xl rounded-2xl overflow-hidden border border-stone-200 bg-white transition-all duration-300 ${minimized ? 'h-14 w-72' : 'w-80 sm:w-96 h-[500px]'}`}>
 
           {/* Header */}
@@ -677,79 +688,86 @@ export default function Chatbot() {
 
           {!minimized && (
             <>
-              <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 bg-stone-50">
-                {messages.length === 0 && (
-                  <div className="text-center py-8">
-                    <p className="text-stone-400 text-sm">
-                      Hallo {user.firstName}! 👋<br />
-                      Wie können wir Ihnen helfen?<br />
-                      <span className="text-xs">(How can we help you?)</span>
-                    </p>
-                  </div>
-                )}
-
-                {messages.map(msg => (
-                  <div key={msg._id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    {msg.role === 'admin' && (
-                      <div className="w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center text-white text-xs font-bold mr-2 shrink-0 mt-1">W</div>
-                    )}
-                    <div className="max-w-[78%]">
-                      <div className={`px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed ${
-                        msg.role === 'user'
-                          ? 'bg-amber-500 text-white rounded-br-sm'
-                          : 'bg-white text-stone-800 border border-stone-200 shadow-sm rounded-bl-sm'
-                      }`}>
-                        {msg.text}
+              {/* Visitor form (name + mobile number) or chat */}
+              {!started ? (
+                <VisitorForm onSubmit={handleVisitorSubmit} />
+              ) : (
+                <>
+                  {/* Messages area */}
+                  <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 bg-stone-50">
+                    {messages.length === 0 && (
+                      <div className="text-center py-8">
+                        <p className="text-stone-400 text-sm">
+                          Hallo {visitor.name}! 👋<br />
+                          Wie können wir Ihnen helfen?<br />
+                          <span className="text-xs">(How can we help you?)</span>
+                        </p>
                       </div>
-                      <p className={`text-xs text-stone-400 mt-0.5 ${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
-                        {msg.role === 'admin' ? 'WERT Team · ' : ''}{fmt(msg.createdAt)}
-                      </p>
+                    )}
+
+                    {messages.map((msg) => (
+                      <div key={msg._id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                        {msg.role === 'admin' && (
+                          <div className="w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center text-white text-xs font-bold mr-2 shrink-0 mt-1">W</div>
+                        )}
+                        <div className="max-w-[78%]">
+                          <div className={`px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed ${
+                            msg.role === 'user'
+                              ? 'bg-amber-500 text-white rounded-br-sm'
+                              : 'bg-white text-stone-800 border border-stone-200 shadow-sm rounded-bl-sm'
+                          }`}>
+                            {msg.text}
+                          </div>
+                          <p className={`text-xs text-stone-400 mt-0.5 ${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
+                            {msg.role === 'admin' ? 'WERT Team · ' : ''}{fmt(msg.createdAt)}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+
+                    {error && (
+                      <div className="text-center">
+                        <p className="text-red-400 text-xs bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</p>
+                      </div>
+                    )}
+                    <div ref={messagesEndRef} />
+                  </div>
+
+                  {/* Input */}
+                  <div className="px-3 py-3 border-t border-stone-100 bg-white shrink-0">
+                    <div className="flex gap-2 items-end">
+                      <textarea
+                        ref={inputRef}
+                        value={input}
+                        onChange={e => setInput(e.target.value)}
+                        onKeyDown={handleKey}
+                        placeholder="Nachricht eingeben... / Type a message..."
+                        rows={1}
+                        className="flex-1 resize-none border border-stone-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-amber-400 bg-stone-50 text-stone-800 placeholder-stone-400 transition-colors"
+                        style={{ maxHeight: '80px' }}
+                      />
+                      <button
+                        onClick={sendMessage}
+                        disabled={!input.trim() || sending}
+                        className="w-10 h-10 bg-amber-500 hover:bg-amber-600 disabled:opacity-40 text-white rounded-xl flex items-center justify-center transition-all shrink-0 active:scale-95"
+                      >
+                        <SendIcon />
+                      </button>
                     </div>
+                    <p className="text-center text-stone-300 text-xs mt-1.5">WERT Hausverwaltung Support</p>
                   </div>
-                ))}
-
-                {error && (
-                  <div className="text-center">
-                    <p className="text-red-400 text-xs bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</p>
-                  </div>
-                )}
-                <div ref={messagesEndRef} />
-              </div>
-
-              <div className="px-3 py-3 border-t border-stone-100 bg-white shrink-0">
-                <div className="flex gap-2 items-end">
-                  <textarea
-                    ref={inputRef}
-                    value={input}
-                    onChange={e => setInput(e.target.value)}
-                    onKeyDown={handleKey}
-                    placeholder="Nachricht eingeben... / Type a message..."
-                    rows={1}
-                    className="flex-1 resize-none border border-stone-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-amber-400 bg-stone-50 text-stone-800 placeholder-stone-400 transition-colors"
-                    style={{ maxHeight: '80px' }}
-                  />
-                  <button
-                    onClick={sendMessage}
-                    disabled={!input.trim() || sending}
-                    className="w-10 h-10 bg-amber-500 hover:bg-amber-600 disabled:opacity-40 text-white rounded-xl flex items-center justify-center transition-all shrink-0 active:scale-95"
-                  >
-                    <SendIcon />
-                  </button>
-                </div>
-                <p className="text-center text-stone-300 text-xs mt-1.5">
-                  Angemeldet als: <span className="text-stone-400 font-medium">{user.firstName} {user.lastName}</span>
-                </p>
-              </div>
+                </>
+              )}
             </>
           )}
         </div>
       )}
 
-      {/* FAB Button */}
+      {/* ── FAB Button ── */}
       <button
-        onClick={handleFabClick}
+        onClick={open ? () => { setOpen(false); setMinimized(false); } : openChat}
         className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-amber-500 hover:bg-amber-600 text-white rounded-full shadow-2xl flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95"
-        title={isLoggedIn ? 'Chat with us' : 'Login required to chat'}
+        title="Chat with us"
       >
         {open ? <CloseIcon /> : <ChatIcon />}
         {unread > 0 && !open && (
@@ -757,23 +775,7 @@ export default function Chatbot() {
             {unread > 9 ? '9+' : unread}
           </span>
         )}
-        {!isLoggedIn && !open && (
-          <span className="absolute -top-1 -right-1 w-5 h-5 bg-stone-700 text-white rounded-full flex items-center justify-center">
-            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"/>
-            </svg>
-          </span>
-        )}
       </button>
-
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: scale(0.95) translateY(8px); }
-          to   { opacity: 1; transform: scale(1) translateY(0); }
-        }
-        .animate-fadeIn { animation: fadeIn 0.2s ease-out both; }
-      `}</style>
     </>
   );
 }
-

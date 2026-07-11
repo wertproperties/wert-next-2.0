@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useLang } from '../context/LangContext';
 import { useAuth } from '../context/AuthContext';
+import AuthModal from './AuthModal';
 import logo from '../assets/logo.png';
 
 
@@ -33,6 +34,7 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [mobileExpanded, setMobileExpanded] = useState(null);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
   const location = useLocation();
   const navRef = useRef(null);
 
@@ -95,12 +97,21 @@ export default function Navbar() {
             {n.contact}
           </Link>
 
-          <Link
-            to={user ? (user.role === 'admin' ? '/admin' : '/portal') : '/login'}
-            className="hidden lg:flex items-center gap-2 border border-white/30 hover:border-sky-300 text-white/80 hover:text-sky-500 text-xs font-medium px-4 py-2.5 transition-all"
-          >
-            {user ? (lang === 'en' ? 'My Portal' : 'Mein Portal') : n.customerPortal}
-          </Link>
+          {user ? (
+            <Link
+              to={user.role === 'admin' ? '/admin' : '/portal'}
+              className="hidden lg:flex items-center gap-2 border border-white/30 hover:border-sky-300 text-white/80 hover:text-sky-500 text-xs font-medium px-4 py-2.5 transition-all"
+            >
+              {lang === 'en' ? 'My Portal' : 'Mein Portal'}
+            </Link>
+          ) : (
+            <button
+              onClick={() => setAuthModalOpen(true)}
+              className="hidden lg:flex items-center gap-2 border border-white/30 hover:border-sky-300 text-white/80 hover:text-sky-500 text-xs font-medium px-4 py-2.5 transition-all"
+            >
+              {n.customerPortal}
+            </button>
+          )}
 
           {/* Mobile toggle */}
           <button className="lg:hidden text-white p-1" onClick={() => setMobileOpen(!mobileOpen)}>
@@ -146,15 +157,28 @@ export default function Navbar() {
                 <GlobeIcon />{lang === 'en' ? 'Deutsch' : 'English'}
               </button>
               <Link to="/contact" className="btn-primary text-center text-xs">{n.contact}</Link>
-              <Link
-                to={user ? (user.role === 'admin' ? '/admin' : '/portal') : '/login'}
-                className="border border-white/20 text-white/70 text-xs text-center py-2.5 px-4 uppercase tracking-wider"
-              >
-                {user ? (lang === 'en' ? 'My Portal' : 'Mein Portal') : n.customerPortal}
-              </Link>
+              {user ? (
+                <Link
+                  to={user.role === 'admin' ? '/admin' : '/portal'}
+                  className="border border-white/20 text-white/70 text-xs text-center py-2.5 px-4 uppercase tracking-wider"
+                >
+                  {lang === 'en' ? 'My Portal' : 'Mein Portal'}
+                </Link>
+              ) : (
+                <button
+                  onClick={() => setAuthModalOpen(true)}
+                  className="border border-white/20 text-white/70 text-xs text-center py-2.5 px-4 uppercase tracking-wider"
+                >
+                  {n.customerPortal}
+                </button>
+              )}
             </div>
           </div>
         </div>
+      )}
+
+      {authModalOpen && (
+        <AuthModal initialTab="login" onClose={() => setAuthModalOpen(false)} />
       )}
     </header>
   );
