@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useLang } from '../context/LangContext';
 import { useAuth } from '../context/AuthContext';
 import AuthModal from './AuthModal';
@@ -36,6 +36,7 @@ export default function Navbar() {
   const [mobileExpanded, setMobileExpanded] = useState(null);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const navRef = useRef(null);
 
   useEffect(() => {
@@ -55,6 +56,17 @@ export default function Navbar() {
   const n = t.nav;
   const isHome = location.pathname === '/';
   const navBg = scrolled || !isHome ? 'bg-stone-900 shadow-lg py-3' : 'bg-transparent py-5';
+
+  // Stay on the current page and scroll to the embedded contact form on the
+  // Home Page instead of navigating away to a separate /contact route.
+  const goToContact = () => {
+    setMobileOpen(false);
+    if (isHome) {
+      document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      navigate('/', { state: { scrollToContact: true } });
+    }
+  };
 
   return (
     <header ref={navRef} className={`fixed top-0 left-0 right-0 z-50 transition-all duration-400 ${navBg}`}>
@@ -90,12 +102,12 @@ export default function Navbar() {
             <span>{lang === 'en' ? 'DE' : 'EN'}</span>
           </button>
 
-          <Link
-            to="/contact"
+          <button
+            onClick={goToContact}
             className="hidden md:flex items-center gap-2 bg-sky-300 hover:bg-sky-400 text-slate-900 font-bold text-xs px-5 py-2.5 uppercase tracking-wider transition-all duration-200"
           >
             {n.contact}
-          </Link>
+          </button>
 
           {user ? (
             <Link
@@ -156,7 +168,7 @@ export default function Navbar() {
               <button onClick={toggleLang} className="flex items-center gap-2 text-white/70 text-sm py-2">
                 <GlobeIcon />{lang === 'en' ? 'Deutsch' : 'English'}
               </button>
-              <Link to="/contact" className="btn-primary text-center text-xs">{n.contact}</Link>
+              <button onClick={goToContact} className="btn-primary text-center text-xs">{n.contact}</button>
               {user ? (
                 <Link
                   to={user.role === 'admin' ? '/admin' : '/portal'}
