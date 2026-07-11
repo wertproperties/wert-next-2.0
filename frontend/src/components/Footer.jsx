@@ -23,7 +23,7 @@ export default function Footer() {
                   WERT
                 </p>
                 <p className="text-accent text-xs tracking-[0.2em] uppercase font-light">
-                  Property Management
+                  Hausverwaltung
                 </p>
               </div>
             </div>
