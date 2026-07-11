@@ -73,10 +73,6 @@ export default function SignupPage() {
               alt="WERT Logo"
               className="h-16 w-auto object-contain"
             />
-            <div className="text-left">
-              <p className="font-black text-slate-900 text-base tracking-tight">WERT</p>
-              <p className="text-yellow-700 text-[10px] tracking-widest uppercase">Immobilieverwaltung</p>
-            </div>
           </Link>
         </div>
 
