@@ -19,11 +19,11 @@ export default function Footer() {
               </div>
 
               <div>
-                <p className="text-white font-black text-xl tracking-tighter">
-                  WERT
-                </p>
                 <p className="text-accent text-xs tracking-[0.2em] uppercase font-light">
                   Hausverwaltung
+                </p>
+                <p className="text-white font-black text-xl tracking-tighter">
+                  WERT
                 </p>
               </div>
             </div>
