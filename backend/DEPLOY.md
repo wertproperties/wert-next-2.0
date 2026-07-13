@@ -1,4 +1,4 @@
-# WERT Hausverwaltung — Deploy Guide (Backend + MongoDB)
+# Hausverwaltung WERT  — Deploy Guide (Backend + MongoDB)
 
 Your app = **frontend** (React, on Vercel) + **backend** (this Express API).
 MongoDB connects to the **backend**, and the frontend calls the backend over HTTP.

@@ -353,7 +353,7 @@
 //                         <SendIcon />
 //                       </button>
 //                     </div>
-//                     <p className="text-center text-stone-300 text-xs mt-1.5">WERT Hausverwaltung Support</p>
+//                     <p className="text-center text-stone-300 text-xs mt-1.5">Hausverwaltung WERT  Support</p>
 //                   </div>
 //                 </>
 //               )}
@@ -754,7 +754,7 @@ export default function Chatbot() {
                         <SendIcon />
                       </button>
                     </div>
-                    <p className="text-center text-stone-300 text-xs mt-1.5">WERT Hausverwaltung Support</p>
+                    <p className="text-center text-stone-300 text-xs mt-1.5">Hausverwaltung WERT  Support</p>
                   </div>
                 </>
               )}

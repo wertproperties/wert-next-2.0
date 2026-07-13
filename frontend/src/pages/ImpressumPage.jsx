@@ -22,7 +22,7 @@ export default function ImpressumPage() {
             </h2>
 
             <p>
-              <strong>Wert Hausverwaltung</strong><br />
+              <strong>Hausverwaltung WERT </strong><br />
 
               {isGerman ? "Inhaber" : "Owner"}: Denis Sözdemir<br />
 
@@ -39,7 +39,7 @@ export default function ImpressumPage() {
               </p>
 
               <p>
-                <strong>E-Mail:</strong> wertproperties@gmail.com
+                <strong>E-Mail:</strong> hausverwaltungwert@outlook.com
               </p>
             </div>
           </section>

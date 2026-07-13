@@ -230,7 +230,7 @@ function ContactSection() {
           <div className="space-y-8">
             {[
               { icon: '✆', label: c.phone, content: <a href="tel:0911891160" className="font-bold text-slate-900 hover:text-accent transition-colors">+4915124261124</a> },
-              { icon: '✉', label: c.email, content: <a href="mailto:wertimmoverwaltung@outlook.com" className="font-bold text-slate-900 hover:text-accent transition-colors text-sm">wertimmoverwaltung@outlook.com</a> },
+              { icon: '✉', label: c.email, content: <a href="mailto:hausverwaltungwert@outlook.com" className="font-bold text-slate-900 hover:text-accent transition-colors text-sm">hausverwaltungwert@outlook.com</a> },
             ].map(item => (
               <div key={item.label} className="flex items-start gap-4 p-6 border border-slate-100 hover:border-accent transition-colors">
                 <div className="w-12 h-12 bg-accent/10 text-accent flex items-center justify-center text-2xl shrink-0">{item.icon}</div>

@@ -234,7 +234,7 @@ const translations = {
     },
     hero: {
       badge: 'Ihr Immobilienverwalter',
-      title: 'WERT Hausverwaltung',
+      title: 'Hausverwaltung WERT ',
       subtitle: 'Hausverwaltung, Die Funktioniert',
       bullets: [
         'Wir kümmern uns um die Verwaltung Ihrer Immobilie – damit Sie sich um nichts kümmern müssen.',

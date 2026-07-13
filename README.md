@@ -1,4 +1,4 @@
-# WERT Hausverwaltung - Full Stack Website
+# Hausverwaltung WERT  - Full Stack Website
 
 ## Project Structure
 

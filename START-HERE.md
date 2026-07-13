@@ -1,4 +1,4 @@
-# WERT Hausverwaltung — Complete Project
+# Hausverwaltung WERT  — Complete Project
 
 This is the full app. It has two parts that run separately:
 

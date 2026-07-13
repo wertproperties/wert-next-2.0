@@ -38,11 +38,11 @@ export default function Footer() {
               </a>
 
               <a
-                href="mailto:wertproperties@gmail.com"
+                href="mailto:hausverwaltungwert@outlook.com"
                 className="flex items-center gap-2 text-sm hover:text-accent transition-colors"
               >
                 <span className="text-accent">✉</span>
-                wertproperties@gmail.com
+                hausverwaltungwert@outlook.com
               </a>
             </div>
           </div>
@@ -146,7 +146,7 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-6 py-5 flex flex-col sm:flex-row justify-between items-center gap-3">
 
           <p className="text-xs text-slate-600">
-            © {new Date().getFullYear()} Wert Hausverwaltung. {f.rights}
+            © {new Date().getFullYear()} Hausverwaltung WERT . {f.rights}
           </p>
 
           <Link

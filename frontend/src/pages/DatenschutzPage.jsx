@@ -46,7 +46,7 @@ export default function DatenschutzPage() {
             </h2>
 
             <p>
-              <strong>Wert Hausverwaltung</strong><br />
+              <strong>Hausverwaltung WERT </strong><br />
               Denis Sözdemir<br />
               Hinterm Bahnhof 4<br />
               90513 Zirndorf<br />
@@ -55,7 +55,7 @@ export default function DatenschutzPage() {
 
             <div className="mt-4">
               <p>
-                <strong>E-Mail:</strong> wertproperties@gmail.com
+                <strong>E-Mail:</strong> hausverwaltungwert@outlook.com
               </p>
 
               <p>
