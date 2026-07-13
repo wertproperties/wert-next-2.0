@@ -20,7 +20,7 @@ const translations = {
     },
     hero: {
       badge: 'Your Property Manager',
-      title: 'WERT Property Management',
+      title: 'Property Management WERT ',
       subtitle: 'Property Management That Works',
       bullets: [
         'We take care of managing your property – so you dont have to worry about a thing.',
