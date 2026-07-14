@@ -61,16 +61,16 @@ function HeroSlider() {
         <h1 className="font-serif text-4xl sm:text-5xl lg:text-5xl font-bold text-white leading-tight mb-4 max-w-3xl animate-fade-up" style={{ animationDelay: '0.1s' }}>
           {h.title}
         </h1>
-        <h2 className="text-xl sm:text-2xl text-accent font-light tracking-wide mb-6 animate-fade-up" style={{ animationDelay: '0.1s' }}>
+        <h2 className="text-xl sm:text-2xl text-accent font-light tracking-wide mb-3 max-w-2xl animate-fade-up" style={{ animationDelay: '0.1s' }}>
           {h.subtitle}
         </h2>
 
-        <p className="max-w-xl text-white/75 text-base sm:text-lg leading-relaxed mb-6 animate-fade-up" style={{ animationDelay: '0.2s' }}>
-          {h.lead}
+        <p className="text-white/70 text-sm sm:text-base uppercase tracking-[0.15em] mb-8 animate-fade-up" style={{ animationDelay: '0.2s' }}>
+          {h.tagline}
         </p>
 
         {/* Trust markers */}
-        <ul className="flex flex-col sm:flex-row sm:flex-wrap gap-x-7 gap-y-2.5 mb-8 animate-fade-up" style={{ animationDelay: '0.3s' }}>
+        <ul className="grid sm:grid-cols-2 gap-x-8 gap-y-2.5 max-w-2xl mb-9 animate-fade-up" style={{ animationDelay: '0.3s' }}>
           {h.trust.map(item => (
             <li key={item} className="flex items-center gap-2 text-white font-medium text-sm sm:text-base">
               <HeroCheck />
@@ -85,13 +85,13 @@ function HeroSlider() {
             <button
               type="button"
               onClick={scrollToContact}
-              className="inline-flex items-center gap-2 bg-white text-[#103521] font-bold px-8 py-4 text-sm uppercase tracking-widest shadow-lg hover:bg-white/90 transition-all duration-200"
+              className="inline-flex items-center gap-2 bg-accent text-stone-900 font-bold px-8 py-4 text-sm uppercase tracking-widest shadow-lg hover:opacity-90 transition-all duration-200"
             >
               {h.ctaContact} <ArrowRight />
             </button>
             <Link
               to="/services"
-              className="inline-flex items-center gap-2 border-2 border-white/60 text-white font-bold px-8 py-4 text-sm uppercase tracking-widest hover:bg-white hover:text-[#103521] hover:border-white transition-all duration-200"
+              className="inline-flex items-center gap-2 border-2 border-white/60 text-white font-bold px-8 py-4 text-sm uppercase tracking-widest hover:bg-white hover:text-stone-900 hover:border-white transition-all duration-200"
             >
               {h.ctaServices}
             </Link>
@@ -171,6 +171,77 @@ function HeroSlider() {
 //     </section>
 //   );
 // }
+
+/* ---- Why Us Section ---- */
+const whyIcons = [
+  // Personalised support — house
+  <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>,
+  // Fast accessibility — phone
+  <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>,
+  // Transparent processes — clipboard list
+  <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>,
+  // Reliable partnership — people
+  <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>,
+];
+
+function WhyUsSection() {
+  const { t } = useLang();
+  const w = t.whyUs;
+  return (
+    <section className="py-24 bg-white">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-14">
+          <span className="section-tag">{w.tag}</span>
+          <h2 className="section-title mb-4">{w.title}</h2>
+          <p className="text-stone-500 max-w-2xl mx-auto leading-relaxed">{w.subtitle}</p>
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {w.items.map((item, i) => (
+            <div key={item.title} className="border border-stone-200 p-7 hover:border-accent hover:shadow-lg transition-all duration-300 group">
+              <div className="w-14 h-14 bg-accent/10 text-accent flex items-center justify-center mb-5 group-hover:bg-accent group-hover:text-stone-900 transition-all duration-300">
+                {whyIcons[i]}
+              </div>
+              <h3 className="text-stone-900 font-bold text-lg mb-2 leading-tight">{item.title}</h3>
+              <p className="text-stone-500 text-sm leading-relaxed">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---- Process Section ---- */
+function ProcessSection() {
+  const { t } = useLang();
+  const p = t.process;
+  return (
+    <section className="py-24 bg-stone-50">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-14">
+          <span className="section-tag">{p.tag}</span>
+          <h2 className="section-title mb-4">{p.title}</h2>
+          <p className="text-stone-500 max-w-2xl mx-auto leading-relaxed">{p.subtitle}</p>
+        </div>
+        <ol className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {p.steps.map((step, i) => (
+            <li key={step.title} className="relative">
+              {/* connector line (desktop only, not after the last step) */}
+              {i < p.steps.length - 1 && (
+                <span className="hidden lg:block absolute top-7 left-16 right-0 h-px bg-stone-300" aria-hidden="true" />
+              )}
+              <div className="relative w-14 h-14 bg-accent text-stone-900 flex items-center justify-center font-black text-lg mb-5">
+                {String(i + 1).padStart(2, '0')}
+              </div>
+              <h3 className="text-stone-900 font-bold text-lg mb-2 leading-tight">{step.title}</h3>
+              <p className="text-stone-500 text-sm leading-relaxed">{step.desc}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  );
+}
 
 /* ---- Services Section ---- */
 const serviceIcons = [
@@ -350,7 +421,9 @@ export default function HomePage() {
     <main>
       <HeroSlider />
       {/* <AboutSection /> */}
+      <WhyUsSection />
       <ServicesSection />
+      <ProcessSection />
       {/* <ObjectsSection /> */}
       <ContactSection />
       {/* <BVITeaser /> */}
