@@ -1,4 +1,5 @@
 import { useLang } from "../context/LangContext";
+import { CONTACT_EMAIL } from "../config/site";
 
 export default function ImpressumPage() {
   const { lang } = useLang();
@@ -39,7 +40,7 @@ export default function ImpressumPage() {
               </p>
 
               <p>
-                <strong>E-Mail:</strong> hausverwaltungwert@outlook.com
+                <strong>E-Mail:</strong> {CONTACT_EMAIL}
               </p>
             </div>
           </section>

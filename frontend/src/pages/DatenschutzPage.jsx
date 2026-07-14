@@ -1,4 +1,5 @@
 import { useLang } from "../context/LangContext";
+import { CONTACT_EMAIL } from "../config/site";
 
 export default function DatenschutzPage() {
   const { lang } = useLang();
@@ -55,7 +56,7 @@ export default function DatenschutzPage() {
 
             <div className="mt-4">
               <p>
-                <strong>E-Mail:</strong> hausverwaltungwert@outlook.com
+                <strong>E-Mail:</strong> {CONTACT_EMAIL}
               </p>
 
               <p>

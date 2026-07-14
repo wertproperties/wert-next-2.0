@@ -2,11 +2,17 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useLang } from '../context/LangContext';
 import { propertiesAPI, contactAPI } from '../utils/api';
+import { CONTACT_EMAIL, CONTACT_PHONE, CONTACT_PHONE_HREF } from '../config/site';
 
 /* ---- Icons ---- */
 const CheckIcon = () => (
   <svg className="w-5 h-5 text-accent  shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7"/>
+  </svg>
+);
+const HeroCheck = () => (
+  <svg className="w-5 h-5 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7"/>
   </svg>
 );
 const ChevronRight = () => (
@@ -35,8 +41,12 @@ function HeroSlider() {
     return () => clearInterval(t);
   }, []);
 
+  // Hero CTA scrolls to the contact form already on this page — no extra page load.
+  const scrollToContact = () =>
+    document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' });
+
   return (
-    <section className="relative h-screen min-h-[600px] overflow-hidden">
+    <section className="relative min-h-screen overflow-hidden flex items-center">
       {slides.map((s, i) => (
         <div key={i} className={`absolute inset-0 transition-opacity duration-1500 ${i === idx ? 'opacity-100' : 'opacity-0'}`}
           style={{ backgroundImage: `url(${s.bg})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
@@ -44,7 +54,7 @@ function HeroSlider() {
       <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-slate-900/20" />
       <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent" />
 
-      <div className="relative h-full max-w-7xl mx-auto px-6 flex flex-col justify-center pb-20">
+      <div className="relative w-full max-w-7xl mx-auto px-6 py-32 lg:py-36 flex flex-col">
         <span className="inline-block bg-accent text-stone-900 text-xs font-bold tracking-[0.3em] uppercase px-4 py-1.5 mb-6 w-fit animate-fade-up">
           {h.badge}
         </span>
@@ -54,18 +64,40 @@ function HeroSlider() {
         <h2 className="text-xl sm:text-2xl text-accent font-light tracking-wide mb-6 animate-fade-up" style={{ animationDelay: '0.1s' }}>
           {h.subtitle}
         </h2>
-        <ul className="max-w-xl mb-10 animate-fade-up space-y-2" style={{ animationDelay: '0.2s' }}>
-          {h.bullets.map((b, i) => (
-            <li key={i} className="flex items-start gap-2 text-white/75 text-base sm:text-lg leading-relaxed">
-              <span className="mt-2 w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
-              <span>{b}</span>
+
+        <p className="max-w-xl text-white/75 text-base sm:text-lg leading-relaxed mb-6 animate-fade-up" style={{ animationDelay: '0.2s' }}>
+          {h.lead}
+        </p>
+
+        {/* Trust markers */}
+        <ul className="flex flex-col sm:flex-row sm:flex-wrap gap-x-7 gap-y-2.5 mb-8 animate-fade-up" style={{ animationDelay: '0.3s' }}>
+          {h.trust.map(item => (
+            <li key={item} className="flex items-center gap-2 text-white font-medium text-sm sm:text-base">
+              <HeroCheck />
+              <span>{item}</span>
             </li>
           ))}
         </ul>
-        {/* <div className="flex flex-wrap gap-4 animate-fade-up" style={{ animationDelay: '0.4s' }}>
-          <Link to="/contact" className="btn-primary flex items-center gap-2">{h.ctaContact} <ArrowRight /></Link>
-          <Link to="/services" className="btn-outline flex items-center gap-2">{h.ctaServices}</Link>
-        </div> */}
+
+        {/* Call to action */}
+        <div className="animate-fade-up" style={{ animationDelay: '0.4s' }}>
+          <div className="flex flex-wrap gap-4">
+            <button
+              type="button"
+              onClick={scrollToContact}
+              className="inline-flex items-center gap-2 bg-white text-[#103521] font-bold px-8 py-4 text-sm uppercase tracking-widest shadow-lg hover:bg-white/90 transition-all duration-200"
+            >
+              {h.ctaContact} <ArrowRight />
+            </button>
+            <Link
+              to="/services"
+              className="inline-flex items-center gap-2 border-2 border-white/60 text-white font-bold px-8 py-4 text-sm uppercase tracking-widest hover:bg-white hover:text-[#103521] hover:border-white transition-all duration-200"
+            >
+              {h.ctaServices}
+            </Link>
+          </div>
+          <p className="text-white/60 text-xs mt-3.5 tracking-wide">{h.ctaNote}</p>
+        </div>
       </div>
 
       {/* Dots */}
@@ -229,8 +261,8 @@ function ContactSection() {
           {/* Info */}
           <div className="space-y-8">
             {[
-              { icon: '✆', label: c.phone, content: <a href="tel:0911891160" className="font-bold text-slate-900 hover:text-accent transition-colors">+4915124261124</a> },
-              { icon: '✉', label: c.email, content: <a href="mailto:hausverwaltungwert@outlook.com" className="font-bold text-slate-900 hover:text-accent transition-colors text-sm">hausverwaltungwert@outlook.com</a> },
+              { icon: '✆', label: c.phone, content: <a href={CONTACT_PHONE_HREF} className="font-bold text-slate-900 hover:text-accent transition-colors">{CONTACT_PHONE}</a> },
+              { icon: '✉', label: c.email, content: <a href={`mailto:${CONTACT_EMAIL}`} className="font-bold text-slate-900 hover:text-accent transition-colors text-sm">{CONTACT_EMAIL}</a> },
             ].map(item => (
               <div key={item.label} className="flex items-start gap-4 p-6 border border-slate-100 hover:border-accent transition-colors">
                 <div className="w-12 h-12 bg-accent/10 text-accent flex items-center justify-center text-2xl shrink-0">{item.icon}</div>

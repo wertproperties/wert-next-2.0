@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useLang } from '../context/LangContext';
+import { CONTACT_EMAIL } from '../config/site';
 
 export default function Footer() {
   const { t } = useLang();
@@ -38,11 +39,11 @@ export default function Footer() {
               </a>
 
               <a
-                href="mailto:hausverwaltungwert@outlook.com"
+                href={`mailto:${CONTACT_EMAIL}`}
                 className="flex items-center gap-2 text-sm hover:text-accent transition-colors"
               >
                 <span className="text-accent">✉</span>
-                hausverwaltungwert@outlook.com
+                {CONTACT_EMAIL}
               </a>
             </div>
           </div>

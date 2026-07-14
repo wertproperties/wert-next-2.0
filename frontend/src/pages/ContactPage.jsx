@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useLang } from '../context/LangContext';
+import { CONTACT_EMAIL, CONTACT_PHONE, CONTACT_PHONE_HREF } from '../config/site';
 import PageHero from '../components/PageHero';
 import { contactAPI } from '../utils/api';
 
@@ -32,8 +33,8 @@ export default function ContactPage() {
             {/* Info */}
             <div className="space-y-8">
               {[
-                { icon: '✆', label: c.phone, content: <a href="tel:0911891160" className="font-bold text-slate-900 hover:text-accent transition-colors">+4915124261124</a> },
-                { icon: '✉', label: c.email, content: <a href="mailto:hausverwaltungwert@outlook.com" className="font-bold text-slate-900 hover:text-accent transition-colors text-sm">hausverwaltungwert@outlook.com</a> },
+                { icon: '✆', label: c.phone, content: <a href={CONTACT_PHONE_HREF} className="font-bold text-slate-900 hover:text-accent transition-colors">{CONTACT_PHONE}</a> },
+                { icon: '✉', label: c.email, content: <a href={`mailto:${CONTACT_EMAIL}`} className="font-bold text-slate-900 hover:text-accent transition-colors text-sm">{CONTACT_EMAIL}</a> },
                 // { icon: '⌖', label: c.address, content: <p className="text-slate-700">Benno-Strauß-Str. 7a<br />90763 Fürth</p> },
               ].map(item => (
                 <div key={item.label} className="flex items-start gap-4 p-6 border border-slate-100 hover:border-accent transition-colors">
