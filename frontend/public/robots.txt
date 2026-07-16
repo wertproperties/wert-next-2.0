@@ -1,9 +1,3 @@
-# robots.txt — WERT Hausverwaltung
-#
-# ⚠ Replace the domain on the Sitemap line below with your real production
-#    domain if it is not https://www.werthausverwaltung.de
-#    (it must be an absolute URL, and it must match the domain in sitemap.xml).
-
 User-agent: *
 Allow: /
 
@@ -16,4 +10,4 @@ Disallow: /signup
 # Tenant utility forms — no search value
 Disallow: /forms/
 
-Sitemap: https://www.werthausverwaltung.de/sitemap.xml
+Sitemap: https://www.Hausverwaltungwert.de/sitemap.xml
