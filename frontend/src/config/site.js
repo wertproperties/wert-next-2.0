@@ -9,7 +9,7 @@
  * the domain has valid MX records. If it does not, enquiries will bounce silently.
  * To fall back, change this one line back to 'hausverwaltungwert@outlook.com'.
  */
-export const CONTACT_EMAIL = 'info@werthausverwaltung.de';
+export const CONTACT_EMAIL = 'info@hausverwaltungwert.de';
 
 export const CONTACT_PHONE = '+49 151 24261124';
 export const CONTACT_PHONE_HREF = 'tel:+4915124261124';
