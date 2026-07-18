@@ -13,3 +13,13 @@ export const CONTACT_EMAIL = 'info@hausverwaltungwert.de';
 
 export const CONTACT_PHONE = '+49 151 24261124';
 export const CONTACT_PHONE_HREF = 'tel:+4915124261124';
+
+/**
+ * Business address. Must match the address printed in the Impressum,
+ * where it is legally required (§ 5 DDG).
+ * The country line is translated at the point of use (Deutschland / Germany).
+ */
+export const CONTACT_ADDRESS = {
+  street: 'Hinterm Bahnhof 4',
+  city: '90513 Zirndorf',
+};

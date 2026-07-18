@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
 import { useLang } from '../context/LangContext';
-import { CONTACT_EMAIL } from '../config/site';
+import { CONTACT_EMAIL, CONTACT_ADDRESS } from '../config/site';
 
 export default function Footer() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const f = t.footer;
   const n = t.nav;
 
@@ -45,6 +45,15 @@ export default function Footer() {
                 <span className="text-accent">✉</span>
                 {CONTACT_EMAIL}
               </a>
+
+              <address className="flex items-start gap-2 text-sm not-italic pt-1">
+                <span className="text-accent leading-6">⌂</span>
+                <span className="leading-6">
+                  {CONTACT_ADDRESS.street}<br />
+                  {CONTACT_ADDRESS.city}<br />
+                  {lang === 'de' ? 'Deutschland' : 'Germany'}
+                </span>
+              </address>
             </div>
           </div>
 
