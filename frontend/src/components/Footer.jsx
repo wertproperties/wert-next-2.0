@@ -29,15 +29,31 @@ export default function Footer() {
               </div>
             </div>
 
-            <div className="mt-4 space-y-1">
+            <div className="mt-4 space-y-2">
+
+              {/* Office Phone */}
+              <a
+                href="tel:+4991130024389"
+                className="flex items-center gap-2 text-sm hover:text-accent transition-colors"
+              >
+                <span className="text-accent">☎</span>
+                <span>
+                  <strong>{lang === 'de' ? 'Telefon:' : 'Phone:'}</strong> 0911 30024389
+                </span>
+              </a>
+
+              {/* Mobile */}
               <a
                 href="tel:+4915124261124"
                 className="flex items-center gap-2 text-sm hover:text-accent transition-colors"
               >
-                <span className="text-accent">✆</span>
-                +49 151 24261124
+                <span className="text-accent">📱</span>
+                <span>
+                  <strong>{lang === 'de' ? 'Mobil:' : 'Mobile:'}</strong> 0151 24261124
+                </span>
               </a>
 
+              {/* Email */}
               <a
                 href={`mailto:${CONTACT_EMAIL}`}
                 className="flex items-center gap-2 text-sm hover:text-accent transition-colors"
@@ -46,14 +62,18 @@ export default function Footer() {
                 {CONTACT_EMAIL}
               </a>
 
+              {/* Address */}
               <address className="flex items-start gap-2 text-sm not-italic pt-1">
                 <span className="text-accent leading-6">⌂</span>
                 <span className="leading-6">
-                  {CONTACT_ADDRESS.street}<br />
-                  {CONTACT_ADDRESS.city}<br />
+                  {CONTACT_ADDRESS.street}
+                  <br />
+                  {CONTACT_ADDRESS.city}
+                  <br />
                   {lang === 'de' ? 'Deutschland' : 'Germany'}
                 </span>
               </address>
+
             </div>
           </div>
 

@@ -332,8 +332,39 @@ function ContactSection() {
           {/* Info */}
           <div className="space-y-8">
             {[
-              { icon: '✆', label: c.phone, content: <a href={CONTACT_PHONE_HREF} className="font-bold text-slate-900 hover:text-accent transition-colors">{CONTACT_PHONE}</a> },
-              { icon: '✉', label: c.email, content: <a href={`mailto:${CONTACT_EMAIL}`} className="font-bold text-slate-900 hover:text-accent transition-colors text-sm">{CONTACT_EMAIL}</a> },
+              {
+                icon: '✆',
+                label: lang === 'de' ? 'BÜRO' : 'OFFICE',
+                content: (
+                  <div className="space-y-1">
+                    <p className="font-bold text-slate-900">
+                      <span className="font-semibold">
+                        {lang === 'de' ? 'Telefon:' : 'Phone:'}
+                      </span>{' '}
+                      0911 30024389
+                    </p>
+
+                    <p className="font-bold text-slate-900">
+                      <span className="font-semibold">
+                        {lang === 'de' ? 'Mobil:' : 'Mobile:'}
+                      </span>{' '}
+                      0151 24261124
+                    </p>
+                  </div>
+                )
+              },
+              {
+                icon: '✉',
+                label: c.email,
+                content: (
+                  <a
+                    href={`mailto:${CONTACT_EMAIL}`}
+                    className="font-bold text-slate-900 hover:text-accent transition-colors text-sm"
+                  >
+                    {CONTACT_EMAIL}
+                  </a>
+                )
+              },
             ].map(item => (
               <div key={item.label} className="flex items-start gap-4 p-6 border border-slate-100 hover:border-accent transition-colors">
                 <div className="w-12 h-12 bg-accent/10 text-accent flex items-center justify-center text-2xl shrink-0">{item.icon}</div>
