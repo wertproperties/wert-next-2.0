@@ -334,7 +334,6 @@ function ContactSection() {
             {[
               {
                 icon: '✆',
-                label: lang === 'de' ? 'BÜRO' : 'OFFICE',
                 content: (
                   <div className="space-y-1">
                     <p className="font-bold text-slate-900">
