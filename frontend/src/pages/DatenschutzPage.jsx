@@ -54,13 +54,35 @@ export default function DatenschutzPage() {
               {isGerman ? "Deutschland" : "Germany"}
             </p>
 
-            <div className="mt-4">
+            <div className="mt-4 space-y-2">
               <p>
-                <strong>E-Mail:</strong> {CONTACT_EMAIL}
+                <strong>E-Mail:</strong>{" "}
+                <a
+                  href={`mailto:${CONTACT_EMAIL}`}
+                  className="text-accent hover:underline"
+                >
+                  {CONTACT_EMAIL}
+                </a>
               </p>
 
               <p>
-                <strong>{isGerman ? "Telefon" : "Phone"}:</strong> +49 151 24261124
+                <strong>{isGerman ? "Telefon" : "Phone"}:</strong>{" "}
+                <a
+                  href="tel:+4991130024389"
+                  className="text-accent hover:underline"
+                >
+                  0911 30024389
+                </a>
+              </p>
+
+              <p>
+                <strong>{isGerman ? "Mobil" : "Mobile"}:</strong>{" "}
+                <a
+                  href="tel:+4915124261124"
+                  className="text-accent hover:underline"
+                >
+                  0151 24261124
+                </a>
               </p>
             </div>
           </section>
