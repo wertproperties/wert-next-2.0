@@ -306,21 +306,20 @@ export default function AuthModal({ initialTab = 'login', onClose }) {
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-fadeIn">
+      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[95vh] overflow-y-auto animate-fadeIn">
         <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 z-10">
           <CloseIcon />
         </button>
 
-        <div className="px-8 pt-8 pb-2 text-center">
-          <div className="relative w-auto h-14 mx-auto mb-3 flex items-center justify-center">
-            <Image
-              src="/images/logoo.png"
-              alt="WERT Logo"
-              width={160}
-              height={56}
-              className="h-14 w-auto object-contain mx-auto"
-            />
-          </div>
+        <div className="px-8 pt-6 pb-2 text-center">
+          <Image
+            src="/images/logoo.png"
+            alt="WERT Logo"
+            width={160}
+            height={56}
+            className="h-14 w-auto object-contain mx-auto mb-3"
+            priority
+          />
           <h1 className="font-serif text-2xl font-bold text-slate-900 mb-1">
             {tab === 'login'
               ? lang === 'de'
@@ -330,14 +329,14 @@ export default function AuthModal({ initialTab = 'login', onClose }) {
               ? 'Konto erstellen'
               : 'Create Account'}
           </h1>
-          <p className="text-slate-400 text-sm mb-5">
+          <p className="text-slate-400 text-sm mb-4">
             {lang === 'de' ? 'Willkommen im Kundenportal' : 'Welcome to the customer portal'}
           </p>
         </div>
 
         {/* Tabs */}
         <div className="px-8">
-          <div className="flex border-b border-slate-200 mb-6">
+          <div className="flex border-b border-slate-200 mb-5">
             <button
               onClick={() => setTab('login')}
               className={`flex-1 pb-3 text-sm font-bold uppercase tracking-wider transition-colors ${

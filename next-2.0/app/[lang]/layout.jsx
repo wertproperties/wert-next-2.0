@@ -1,8 +1,5 @@
 import { LangProvider } from '@/context/LangContext';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import Chatbot from '@/components/Chatbot';
-import CookieBanner from '@/components/CookieBanner';
+import MainLayoutWrapper from '@/components/MainLayoutWrapper';
 import { SUPPORTED_LANGS, DEFAULT_LANG } from '@/lib/routes';
 
 export async function generateStaticParams() {
@@ -15,11 +12,7 @@ export default async function MultilingualLayout({ children, params }) {
 
   return (
     <LangProvider initialLang={lang}>
-      <Navbar />
-      <div className="min-h-screen">{children}</div>
-      <Footer />
-      <Chatbot />
-      <CookieBanner />
+      <MainLayoutWrapper>{children}</MainLayoutWrapper>
     </LangProvider>
   );
 }
