@@ -4,7 +4,7 @@
 // const SESSION_KEY   = 'wert_chat_session';
 // const VISITOR_KEY   = 'wert_chat_visitor';
 // const POLL_INTERVAL = 3000; // ms — poll every 3 seconds for new admin replies
-// const API_BASE      = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+// const API_BASE      = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
 
 // function getOrCreateSession() {
 //   let id = sessionStorage.getItem(SESSION_KEY);
@@ -386,7 +386,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 const SESSION_KEY   = 'wert_chat_session';
 const VISITOR_KEY   = 'wert_chat_visitor';
 const POLL_INTERVAL = 3000; // ms — poll every 3 seconds for new admin replies
-const API_BASE      = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const API_BASE      = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
 
 function getOrCreateSession() {
   let id = sessionStorage.getItem(SESSION_KEY);
