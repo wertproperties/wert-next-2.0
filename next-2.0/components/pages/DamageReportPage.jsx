@@ -1,0 +1,84 @@
+'use client';
+
+import { useState } from 'react';
+import { useLang } from '@/context/LangContext';
+import PageHero from '@/components/PageHero';
+import { formsAPI } from '@/lib/api';
+function FormWrapper({ title, onSubmit, loading, status, success, error, children }) {
+  return (
+    <section className="py-24 bg-slate-50">
+      <div className="max-w-3xl mx-auto px-6">
+        <div className="bg-white p-8 md:p-12 shadow-sm border border-slate-100">
+          <h2 className="font-serif text-2xl font-bold text-slate-900 mb-8 pb-4 border-b border-slate-100">{title}</h2>
+          {status === 'success' && <div className="bg-green-50 border border-green-200 text-green-700 text-sm px-5 py-4 mb-6">{success}</div>}
+          {status === 'error' && <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-5 py-4 mb-6">{error}</div>}
+          <form onSubmit={onSubmit} className="space-y-5">
+            {children}
+            <button type="submit" disabled={loading} className="btn-dark w-full disabled:opacity-60">
+              {loading ? '...' : title}
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Field({ label, children }) {
+  return (
+    <div>
+      <label className="form-label">{label}</label>
+      {children}
+    </div>
+  );
+}
+
+export default function DamageReportPage() {
+  const { t } = useLang();
+  const d = t.pages.forms.damage;
+  const n = t.nav;
+  const [form, setForm] = useState({ name: '', email: '', phone: '', address: '', unit: '', damageType: '', description: '', urgency: 'medium' });
+  const [status, setStatus] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const ch = e => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const onSubmit = async e => {
+    e.preventDefault(); setLoading(true);
+    try { await formsAPI.submitDamage(form); setStatus('success'); setForm({ name: '', email: '', phone: '', address: '', unit: '', damageType: '', description: '', urgency: 'medium' }); }
+    catch { setStatus('error'); }
+    finally { setLoading(false); }
+  };
+
+  return (
+    <main>
+      <PageHero tag={d.tag} title={d.title} desc={d.heroDesc}
+        bgImage="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1400&q=80"
+        breadcrumbs={[{ label: n.forms }, { label: n.damageReport }]} />
+      <FormWrapper title={d.title} onSubmit={onSubmit} loading={loading} status={status} success={d.success} error={d.error}>
+        <div className="grid sm:grid-cols-2 gap-5">
+          <Field label={d.nameFld}><input name="name" value={form.name} onChange={ch} required className="input-field" /></Field>
+          <Field label={d.emailFld}><input type="email" name="email" value={form.email} onChange={ch} required className="input-field" /></Field>
+        </div>
+        <div className="grid sm:grid-cols-2 gap-5">
+          <Field label={d.phoneFld}><input type="tel" name="phone" value={form.phone} onChange={ch} className="input-field" /></Field>
+          <Field label={d.unitFld}><input name="unit" value={form.unit} onChange={ch} className="input-field" /></Field>
+        </div>
+        <Field label={d.addressFld}><input name="address" value={form.address} onChange={ch} required className="input-field" /></Field>
+        <div className="grid sm:grid-cols-2 gap-5">
+          <Field label={d.damageTypeFld}>
+            <select name="damageType" value={form.damageType} onChange={ch} required className="input-field bg-white">
+              <option value="">-- Select --</option>
+              {d.damageTypes.map(dt => <option key={dt} value={dt}>{dt}</option>)}
+            </select>
+          </Field>
+          <Field label={d.urgencyFld}>
+            <select name="urgency" value={form.urgency} onChange={ch} className="input-field bg-white">
+              {['low','medium','high','emergency'].map((v, i) => <option key={v} value={v}>{d.urgencyOptions[i]}</option>)}
+            </select>
+          </Field>
+        </div>
+        <Field label={d.descFld}><textarea name="description" value={form.description} onChange={ch} required rows={5} className="input-field resize-none" /></Field>
+      </FormWrapper>
+    </main>
+  );
+}

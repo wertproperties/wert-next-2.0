@@ -1,0 +1,396 @@
+'use client';
+
+import { useState, useEffect, Suspense } from 'react';
+import Link from 'next/link';
+import { usePathname, useSearchParams } from 'next/navigation';
+import { useLang } from '@/context/LangContext';
+import { propertiesAPI, contactAPI } from '@/lib/api';
+import { CONTACT_EMAIL } from '@/lib/site';
+import { localePath } from '@/lib/routes';
+/* ---- Icons ---- */
+const CheckIcon = () => (
+  <svg className="w-5 h-5 text-accent shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+  </svg>
+);
+const HeroCheck = () => (
+  <svg className="w-5 h-5 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+  </svg>
+);
+const ChevronRight = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+  </svg>
+);
+const ArrowRight = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+  </svg>
+);
+
+/* ---- Hero Slider ---- */
+function HeroSlider() {
+  const { t, lang } = useLang();
+  const h = t.hero;
+  const [idx, setIdx] = useState(0);
+  const slides = [
+    { bg: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1600&q=80' },
+    { bg: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1600&q=80' },
+  ];
+  useEffect(() => {
+    const timer = setInterval(() => setIdx(i => (i + 1) % slides.length), 6000);
+    return () => clearInterval(timer);
+  }, [slides.length]);
+
+  const scrollToContact = () =>
+    document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' });
+
+  return (
+    <section className="relative min-h-screen overflow-hidden flex items-center">
+      {slides.map((s, i) => (
+        <div key={i} className={`absolute inset-0 transition-opacity duration-1500 ${i === idx ? 'opacity-100' : 'opacity-0'}`}
+          style={{ backgroundImage: `url(${s.bg})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+      ))}
+      <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-slate-900/20" />
+      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent" />
+
+      <div className="relative w-full max-w-7xl mx-auto px-6 py-32 lg:py-36 flex flex-col">
+        <span className="inline-block bg-accent text-stone-900 text-xs font-bold tracking-[0.3em] uppercase px-4 py-1.5 mb-6 w-fit animate-fade-up">
+          {h.badge}
+        </span>
+        <h1 className="font-serif text-4xl sm:text-5xl lg:text-5xl font-bold text-white leading-tight mb-4 max-w-3xl animate-fade-up" style={{ animationDelay: '0.1s' }}>
+          {h.title}
+        </h1>
+        <h2 className="text-xl sm:text-2xl text-accent font-light tracking-wide mb-3 max-w-2xl animate-fade-up" style={{ animationDelay: '0.1s' }}>
+          {h.subtitle}
+        </h2>
+
+        <p className="text-white/70 text-sm sm:text-base uppercase tracking-[0.15em] mb-8 animate-fade-up" style={{ animationDelay: '0.2s' }}>
+          {h.tagline}
+        </p>
+
+        {/* Trust markers */}
+        <ul className="grid sm:grid-cols-2 gap-x-8 gap-y-2.5 max-w-2xl mb-9 animate-fade-up" style={{ animationDelay: '0.3s' }}>
+          {h.trust.map(item => (
+            <li key={item} className="flex items-center gap-2 text-white font-medium text-sm sm:text-base">
+              <HeroCheck />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+
+        {/* Call to action */}
+        <div className="animate-fade-up" style={{ animationDelay: '0.4s' }}>
+          <div className="flex flex-wrap gap-4">
+            <button
+              type="button"
+              onClick={scrollToContact}
+              className="inline-flex items-center gap-2 bg-accent text-stone-900 font-bold px-8 py-4 text-sm uppercase tracking-widest shadow-lg hover:opacity-90 transition-all duration-200"
+            >
+              {h.ctaContact} <ArrowRight />
+            </button>
+            <Link
+              href={localePath(lang, '/services')}
+              className="inline-flex items-center gap-2 border-2 border-white/60 text-white font-bold px-8 py-4 text-sm uppercase tracking-widest hover:bg-white hover:text-stone-900 hover:border-white transition-all duration-200"
+            >
+              {h.ctaServices}
+            </Link>
+          </div>
+          <p className="text-white/60 text-xs mt-3.5 tracking-wide">{h.ctaNote}</p>
+        </div>
+      </div>
+
+      {/* Dots */}
+      <div className="absolute bottom-24 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+        {slides.map((_, i) => (
+          <button key={i} onClick={() => setIdx(i)}
+            className={`transition-all duration-300 rounded-full ${i === idx ? 'w-8 h-2 bg-accent' : 'w-2 h-2 bg-white/40 hover:bg-white/70'}`} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ---- Why Us Section ---- */
+const whyIcons = [
+  <svg key="1" className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>,
+  <svg key="2" className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>,
+  <svg key="3" className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>,
+  <svg key="4" className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
+];
+
+function WhyUsSection() {
+  const { t } = useLang();
+  const w = t.whyUs;
+  return (
+    <section className="py-24 bg-white">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-14">
+          <span className="section-tag">{w.tag}</span>
+          <h2 className="section-title mb-4">{w.title}</h2>
+          <p className="text-stone-500 max-w-2xl mx-auto leading-relaxed">{w.subtitle}</p>
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {w.items.map((item, i) => (
+            <div key={item.title} className="border border-stone-200 p-7 hover:border-accent hover:shadow-lg transition-all duration-300 group">
+              <div className="w-14 h-14 bg-accent/10 text-accent flex items-center justify-center mb-5 group-hover:bg-accent group-hover:text-stone-900 transition-all duration-300">
+                {whyIcons[i]}
+              </div>
+              <h3 className="text-stone-900 font-bold text-lg mb-2 leading-tight">{item.title}</h3>
+              <p className="text-stone-500 text-sm leading-relaxed">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---- Process Section ---- */
+function ProcessSection() {
+  const { t } = useLang();
+  const p = t.process;
+  return (
+    <section className="py-24 bg-stone-50">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-14">
+          <span className="section-tag">{p.tag}</span>
+          <h2 className="section-title mb-4">{p.title}</h2>
+          <p className="text-stone-500 max-w-2xl mx-auto leading-relaxed">{p.subtitle}</p>
+        </div>
+        <ol className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {p.steps.map((step, i) => (
+            <li key={step.title} className="relative">
+              {i < p.steps.length - 1 && (
+                <span className="hidden lg:block absolute top-7 left-16 right-0 h-px bg-stone-300" aria-hidden="true" />
+              )}
+              <div className="relative w-14 h-14 bg-accent text-stone-900 flex items-center justify-center font-black text-lg mb-5">
+                {String(i + 1).padStart(2, '0')}
+              </div>
+              <h3 className="text-stone-900 font-bold text-lg mb-2 leading-tight">{step.title}</h3>
+              <p className="text-stone-500 text-sm leading-relaxed">{step.desc}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  );
+}
+
+/* ---- Services Section ---- */
+const serviceIcons = [
+  <svg key="s1" className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>,
+  <svg key="s2" className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
+  <svg key="s3" className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
+  <svg key="s4" className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>,
+  <svg key="s5" className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0l4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0l-5.571 3-5.571-3" /></svg>,
+];
+
+function ServicesSection() {
+  const { t, lang } = useLang();
+  const s = t.services;
+  return (
+    <section className="py-24 bg-sky-100">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-16">
+          <span className="section-tag">{s.tag}</span>
+          <h2 className="section-title mb-4">{s.title}</h2>
+          <p className="text-stone-500 max-w-2xl mx-auto">{s.subtitle}</p>
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {s.items.map((item, i) => (
+            <div key={i} className="bg-white rounded-2xl p-7 border border-sky-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
+              <div className="w-14 h-14 bg-sky-100 border border-sky-400 rounded-xl flex items-center justify-center mb-5 text-sky-700 group-hover:bg-sky-800 group-hover:text-white transition-all duration-300">
+                {serviceIcons[i]}
+              </div>
+              <h3 className="text-stone-900 font-bold text-lg mb-3 leading-tight group-hover:text-sky-800 transition-colors">{item.title}</h3>
+              {item.desc && <p className="text-stone-500 text-sm leading-relaxed mb-4">{item.desc}</p>}
+              {item.bullets && item.bullets.length > 0 && (
+                <ul className="space-y-2 mb-4">
+                  {item.bullets.map((b, bi) => (
+                    <li key={bi} className="flex items-start gap-2 text-stone-600 text-sm">
+                      <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-sky-400 shrink-0" />
+                      {b}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <Link href={localePath(lang, '/services')} className="inline-flex items-center gap-1 text-sky-600 font-bold text-xs uppercase tracking-wider hover:gap-2 transition-all mt-2">
+                {s.learnMore} <ChevronRight />
+              </Link>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---- Contact Section ---- */
+function ContactSection() {
+  const { t, lang } = useLang();
+  const c = t.contactCTA;
+
+  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', phone: '', subject: '', message: '' });
+  const [status, setStatus] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleSubmit = async e => {
+    e.preventDefault(); setLoading(true);
+    try { await contactAPI.submit(form); setStatus('success'); setForm({ firstName: '', lastName: '', email: '', phone: '', subject: '', message: '' }); }
+    catch { setStatus('error'); }
+    finally { setLoading(false); }
+  };
+
+  return (
+    <section id="contact-form" className="py-24 bg-white scroll-mt-24">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-16">
+          <span className="section-tag">{c.tag}</span>
+          <h2 className="section-title mb-4">{c.title}</h2>
+          <p className="text-stone-500 max-w-2xl mx-auto">{c.desc}</p>
+        </div>
+
+        <div className="grid lg:grid-cols-3 gap-12">
+          {/* Info */}
+          <div className="space-y-8">
+            {[
+              {
+                icon: '✆',
+                content: (
+                  <div className="space-y-1">
+                    <p className="font-bold text-slate-900">
+                      <span className="font-semibold">
+                        {lang === 'de' ? 'Telefon:' : 'Phone:'}
+                      </span>{' '}
+                      0911 30024389
+                    </p>
+                    <p className="font-bold text-slate-900">
+                      <span className="font-semibold">
+                        {lang === 'de' ? 'Mobil:' : 'Mobile:'}
+                      </span>{' '}
+                      0151 24261124
+                    </p>
+                  </div>
+                )
+              },
+              {
+                icon: '✉',
+                label: c.email,
+                content: (
+                  <a
+                    href={`mailto:${CONTACT_EMAIL}`}
+                    className="font-bold text-slate-900 hover:text-accent transition-colors text-sm"
+                  >
+                    {CONTACT_EMAIL}
+                  </a>
+                )
+              },
+            ].map(item => (
+              <div key={item.label || 'phone'} className="flex items-start gap-4 p-6 border border-slate-100 hover:border-accent transition-colors">
+                <div className="w-12 h-12 bg-accent/10 text-accent flex items-center justify-center text-2xl shrink-0">{item.icon}</div>
+                <div>
+                  {item.label && <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">{item.label}</p>}
+                  {item.content}
+                </div>
+              </div>
+            ))}
+
+            {/* Hours */}
+            <div className="p-6 border border-slate-100 bg-slate-50">
+              <h4 className="font-bold text-slate-900 mb-3 uppercase tracking-wider text-xs">
+                {lang === 'de' ? 'Öffnungszeiten' : 'Office Hours'}
+              </h4>
+              <div className="space-y-1 text-sm text-slate-600">
+                <p className="flex justify-between"><span>Mo – Fr</span><span className="font-medium">8:00 – 17:00</span></p>
+                <p className="flex justify-between"><span>Sa</span> <span className="font-medium text-slate-400">{lang === 'de' ? 'Geschlossen' : 'Closed'}</span></p>
+                <p className="flex justify-between"><span>{lang === 'de' ? 'So' : 'Su'}</span><span className="font-medium text-slate-400">{lang === 'de' ? 'Geschlossen' : 'Closed'}</span></p>
+              </div>
+              <p className="mt-4 text-sm text-slate-600 leading-relaxed">
+                {lang === 'de'
+                  ? 'Persönliche Termine auch außerhalb der Öffnungszeiten nach Vereinbarung.'
+                  : 'Personal appointments outside office hours are also available by appointment.'}
+              </p>
+            </div>
+          </div>
+
+          {/* Form */}
+          <div className="lg:col-span-2">
+            <h3 className="font-serif text-2xl font-bold text-slate-900 mb-8">{c.formTitle}</h3>
+            {status === 'success' && <div className="bg-green-50 border border-green-200 text-green-700 text-sm px-5 py-4 mb-6">{c.success}</div>}
+            {status === 'error' && <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-5 py-4 mb-6">{c.error}</div>}
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="grid sm:grid-cols-2 gap-5">
+                <div>
+                  <label className="form-label">{c.firstName}</label>
+                  <input name="firstName" value={form.firstName} onChange={handleChange} required className="input-field" />
+                </div>
+                <div>
+                  <label className="form-label">{c.lastName}</label>
+                  <input name="lastName" value={form.lastName} onChange={handleChange} required className="input-field" />
+                </div>
+              </div>
+              <div className="grid sm:grid-cols-2 gap-5">
+                <div>
+                  <label className="form-label">{c.email}</label>
+                  <input type="email" name="email" value={form.email} onChange={handleChange} required className="input-field" />
+                </div>
+                <div>
+                  <label className="form-label">{c.phoneFld}</label>
+                  <input type="tel" name="phone" value={form.phone} onChange={handleChange} className="input-field" />
+                </div>
+              </div>
+              <div>
+                <label className="form-label">{c.subject}</label>
+                <input name="subject" value={form.subject} onChange={handleChange} className="input-field" />
+              </div>
+              <div>
+                <label className="form-label">{c.message}</label>
+                <textarea name="message" value={form.message} onChange={handleChange} required rows={6} className="input-field resize-none" />
+              </div>
+              <button type="submit" disabled={loading} className="btn-dark disabled:opacity-60 w-full sm:w-auto px-12">
+                {loading ? c.sending : c.send}
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ContactFormScrollHandler() {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const shouldScroll = searchParams?.get('scrollToContact') || window.location.hash === '#contact-form';
+      if (shouldScroll) {
+        setTimeout(() => {
+          document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    }
+  }, [pathname, searchParams]);
+
+  return null;
+}
+
+/* ---- Home Page ---- */
+export default function HomePage() {
+  return (
+    <main>
+      <Suspense fallback={null}>
+        <ContactFormScrollHandler />
+      </Suspense>
+      <HeroSlider />
+      <WhyUsSection />
+      <ServicesSection />
+      <ProcessSection />
+      <ContactSection />
+    </main>
+  );
+}
