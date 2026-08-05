@@ -72,6 +72,12 @@ export const AuthProvider = ({ children }) => {
   const seedProperties  = ()       => API.get('/properties/seed');
   const createProperty  = (data)   => API.post('/properties', data);
 
+  // SEO methods
+  const getAllSeo  = ()             => API.get('/seo');
+  const getSeo     = (slug)         => API.get(`/seo/${slug}`);
+  const updateSeo  = (slug, data)   => API.put(`/seo/${slug}`, data);
+  const seedSeo    = ()             => API.post('/seo/seed');
+
   return (
     <AuthContext.Provider
       value={{
@@ -94,6 +100,10 @@ export const AuthProvider = ({ children }) => {
         getAllProperties,
         seedProperties,
         createProperty,
+        getAllSeo,
+        getSeo,
+        updateSeo,
+        seedSeo,
         isAdmin: user?.role === 'admin',
         isLoggedIn: !!user,
       }}

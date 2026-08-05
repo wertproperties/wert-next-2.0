@@ -523,10 +523,241 @@ function ListPanel({ title, loadFn, headers, rowFn, emptyMsg }) {
   );
 }
 
+const SEO_PAGE_LABELS = {
+  home: 'Homepage',
+  services: 'Services / Leistungen',
+  contact: 'Contact / Kontakt',
+  objects: 'Objects / Objekte',
+  impressum: 'Impressum',
+  datenschutz: 'Datenschutz',
+  locations: 'Locations / Standorte',
+};
+
+const EMPTY_SEO_FORM = {
+  titleDe: '',
+  descriptionDe: '',
+  titleEn: '',
+  descriptionEn: '',
+  ogImage: '',
+  canonical: '',
+  noIndex: false,
+};
+
+/* ─── SEO PANEL ─────────────────────────────────────────────────── */
+function SeoPanel({ getAllSeo, updateSeo, seedSeo }) {
+  const [entries, setEntries]     = useState([]);
+  const [forms, setForms]         = useState({});
+  const [loading, setLoading]     = useState(true);
+  const [saving, setSaving]       = useState({});
+  const [status, setStatus]       = useState({});
+  const [expanded, setExpanded]   = useState('home');
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await getAllSeo();
+      const list = res.data.data || [];
+      setEntries(list);
+      const next = {};
+      for (const e of list) {
+        next[e.slug] = {
+          titleDe: e.titleDe || '',
+          descriptionDe: e.descriptionDe || '',
+          titleEn: e.titleEn || '',
+          descriptionEn: e.descriptionEn || '',
+          ogImage: e.ogImage || '',
+          canonical: e.canonical || '',
+          noIndex: !!e.noIndex,
+        };
+      }
+      setForms(next);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }, [getAllSeo]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const setField = (slug, field, value) => {
+    setForms((prev) => ({
+      ...prev,
+      [slug]: { ...(prev[slug] || EMPTY_SEO_FORM), [field]: value },
+    }));
+  };
+
+  const handleSave = async (slug) => {
+    setSaving((s) => ({ ...s, [slug]: true }));
+    setStatus((s) => ({ ...s, [slug]: null }));
+    try {
+      const res = await updateSeo(slug, forms[slug] || EMPTY_SEO_FORM);
+      const updated = res.data.data;
+      setEntries((list) => list.map((e) => (e.slug === slug ? updated : e)));
+      setStatus((s) => ({ ...s, [slug]: { type: 'ok', msg: 'Saved' } }));
+    } catch (err) {
+      setStatus((s) => ({
+        ...s,
+        [slug]: { type: 'err', msg: err.response?.data?.message || 'Save failed' },
+      }));
+    } finally {
+      setSaving((s) => ({ ...s, [slug]: false }));
+    }
+  };
+
+  const handleSeed = async () => {
+    try {
+      await seedSeo();
+      await load();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  if (loading) return <div className="text-center py-12 text-stone-400">Loading SEO…</div>;
+
+  const slugs = entries.length
+    ? entries.map((e) => e.slug)
+    : Object.keys(SEO_PAGE_LABELS);
+
+  return (
+    <div className="space-y-4 max-w-4xl">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div>
+          <h2 className="font-bold text-stone-900 text-xl">Page SEO</h2>
+          <p className="text-stone-500 text-sm mt-1">
+            Edit title, description and Open Graph fields per page (DE / EN).
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={handleSeed}
+          className="text-xs font-bold uppercase tracking-wider px-4 py-2 border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 rounded"
+        >
+          Ensure defaults
+        </button>
+      </div>
+
+      {slugs.map((slug) => {
+        const form = forms[slug] || EMPTY_SEO_FORM;
+        const open = expanded === slug;
+        const st = status[slug];
+        return (
+          <div key={slug} className="bg-white border border-stone-100 rounded-xl overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setExpanded(open ? null : slug)}
+              className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-stone-50 transition-colors"
+            >
+              <div>
+                <p className="font-bold text-stone-900">{SEO_PAGE_LABELS[slug] || slug}</p>
+                <p className="text-xs text-stone-400 font-mono mt-0.5">{slug}</p>
+              </div>
+              <span className="text-stone-400 text-sm">{open ? '▲' : '▼'}</span>
+            </button>
+
+            {open && (
+              <div className="px-5 pb-5 pt-1 border-t border-stone-100 space-y-4">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 mb-1.5">German title</label>
+                    <input
+                      value={form.titleDe}
+                      onChange={(e) => setField(slug, 'titleDe', e.target.value)}
+                      className="w-full border border-stone-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-amber-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 mb-1.5">English title</label>
+                    <input
+                      value={form.titleEn}
+                      onChange={(e) => setField(slug, 'titleEn', e.target.value)}
+                      className="w-full border border-stone-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-amber-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 mb-1.5">German description</label>
+                    <textarea
+                      rows={4}
+                      value={form.descriptionDe}
+                      onChange={(e) => setField(slug, 'descriptionDe', e.target.value)}
+                      className="w-full border border-stone-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-amber-500 resize-y"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 mb-1.5">English description</label>
+                    <textarea
+                      rows={4}
+                      value={form.descriptionEn}
+                      onChange={(e) => setField(slug, 'descriptionEn', e.target.value)}
+                      className="w-full border border-stone-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-amber-500 resize-y"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 mb-1.5">OG image URL</label>
+                    <input
+                      value={form.ogImage}
+                      onChange={(e) => setField(slug, 'ogImage', e.target.value)}
+                      placeholder="https://..."
+                      className="w-full border border-stone-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-amber-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 mb-1.5">Canonical URL</label>
+                    <input
+                      value={form.canonical}
+                      onChange={(e) => setField(slug, 'canonical', e.target.value)}
+                      placeholder="https://..."
+                      className="w-full border border-stone-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-amber-500"
+                    />
+                  </div>
+                </div>
+
+                <label className="inline-flex items-center gap-2 text-sm text-stone-700 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={!!form.noIndex}
+                    onChange={(e) => setField(slug, 'noIndex', e.target.checked)}
+                    className="rounded border-stone-300 text-amber-500 focus:ring-amber-500"
+                  />
+                  noindex (hide from search engines)
+                </label>
+
+                <div className="flex items-center gap-3 pt-1">
+                  <button
+                    type="button"
+                    disabled={saving[slug]}
+                    onClick={() => handleSave(slug)}
+                    className="bg-amber-500 hover:bg-amber-600 text-stone-900 font-bold text-xs uppercase tracking-wider px-5 py-2.5 rounded disabled:opacity-60"
+                  >
+                    {saving[slug] ? 'Saving…' : 'Save'}
+                  </button>
+                  {st && (
+                    <span className={`text-sm font-medium ${st.type === 'ok' ? 'text-green-600' : 'text-red-600'}`}>
+                      {st.msg}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 /* ─── ADMIN PAGE ────────────────────────────────────────────────── */
 export default function AdminPage() {
   const { user, loading: authLoading, logout, isAdmin, getAdminStats, getAllUsers, createUser, updateUser, deleteUser,
-    getAllContacts, getAllDamages, getAllKeys, getAllTenants, getAllProperties, seedProperties, createProperty } = useAuth();
+    getAllContacts, getAllDamages, getAllKeys, getAllTenants, getAllProperties, seedProperties, createProperty,
+    getAllSeo, updateSeo, seedSeo } = useAuth();
   const { lang } = useLang();
   const router = useRouter();
   const [tab, setTab]           = useState('overview');
@@ -579,6 +810,7 @@ export default function AdminPage() {
     { key: 'chats',       icon: '💬', label: 'Live Chats',        badge: chatUnread },
     { key: 'users',       icon: '👥', label: 'Users' },
     { key: 'properties',  icon: '🏢', label: 'Properties' },
+    { key: 'seo',         icon: '🔍', label: 'SEO' },
     { key: 'contacts',    icon: '📩', label: 'Contact Inquiries' },
     { key: 'damages',     icon: '🔧', label: 'Damage Reports' },
     { key: 'keys',        icon: '🔑', label: 'Key Orders' },
@@ -633,6 +865,8 @@ export default function AdminPage() {
           {tab === 'users' && <UsersPanel getAllUsers={getAllUsers} createUser={createUser} updateUser={updateUser} deleteUser={deleteUser} />}
 
           {tab === 'properties' && <PropertiesPanel getAllProperties={getAllProperties} seedProperties={seedProperties} createProperty={createProperty} />}
+
+          {tab === 'seo' && <SeoPanel getAllSeo={getAllSeo} updateSeo={updateSeo} seedSeo={seedSeo} />}
 
           {tab === 'contacts' && (
             <ListPanel title="Contact Inquiries" loadFn={getAllContacts}

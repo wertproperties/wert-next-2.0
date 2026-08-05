@@ -12,6 +12,7 @@ const contactRoutes  = require('./routes/contactRoutes');
 const formRoutes     = require('./routes/formRoutes');
 const propertyRoutes = require('./routes/propertyRoutes');
 const chatRoutes     = require('./routes/chatRoutes');
+const seoRoutes      = require('./routes/seoRoutes');
 
 const app = express();
 
@@ -70,6 +71,7 @@ app.use('/api/contact',    contactRoutes);
 app.use('/api/forms',      formRoutes);
 app.use('/api/properties', propertyRoutes);
 app.use('/api/chat',       chatRoutes);
+app.use('/api/seo',        seoRoutes);
 
 app.get('/api/health', (req, res) => res.json({ status: 'OK', timestamp: new Date() }));
 
