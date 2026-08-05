@@ -1,17 +1,19 @@
 import LocationPage from '@/components/pages/LocationPage';
 import { BreadcrumbJsonLd } from '@/components/JsonLd';
-import { BASE_URL, PAGE_SEO, buildPageMetadata } from '@/lib/seo';
-import { LOCATIONS } from '@/lib/locations';
+import { BASE_URL, getPageSeo, buildPageMetadata } from '@/lib/seo';
 
 export async function generateMetadata({ params }) {
   const { lang } = await params;
-  const slug = lang === 'de' ? 'standorte' : 'locations';
-  const canonical = `${BASE_URL}/${lang}/${slug}`;
+  const seo = await getPageSeo('locations', lang);
+  const pathSlug = lang === 'de' ? 'standorte' : 'locations';
+  const canonical = seo.canonical || `${BASE_URL}/${lang}/${pathSlug}`;
 
   return buildPageMetadata({
-    title: PAGE_SEO.locations.title,
-    description: PAGE_SEO.locations.description,
+    title: seo.title,
+    description: seo.description,
     canonical,
+    ogImage: seo.ogImage,
+    noIndex: seo.noIndex,
     languages: {
       de: `${BASE_URL}/de/standorte`,
       en: `${BASE_URL}/en/locations`,
@@ -39,4 +41,3 @@ export default async function Page({ params }) {
     </>
   );
 }
-

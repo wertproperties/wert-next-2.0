@@ -1,15 +1,18 @@
 import ImpressumPage from '@/components/pages/ImpressumPage';
 import { BreadcrumbJsonLd } from '@/components/JsonLd';
-import { BASE_URL, PAGE_SEO, buildPageMetadata } from '@/lib/seo';
+import { BASE_URL, getPageSeo, buildPageMetadata } from '@/lib/seo';
 
 export async function generateMetadata({ params }) {
   const { lang } = await params;
-  const canonical = `${BASE_URL}/${lang}/impressum`;
+  const seo = await getPageSeo('impressum', lang);
+  const canonical = seo.canonical || `${BASE_URL}/${lang}/impressum`;
 
   return buildPageMetadata({
-    title: PAGE_SEO.impressum.title,
-    description: PAGE_SEO.impressum.description,
+    title: seo.title,
+    description: seo.description,
     canonical,
+    ogImage: seo.ogImage,
+    noIndex: seo.noIndex,
     languages: {
       de: `${BASE_URL}/de/impressum`,
       en: `${BASE_URL}/en/impressum`,

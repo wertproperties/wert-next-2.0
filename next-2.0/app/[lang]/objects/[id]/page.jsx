@@ -1,16 +1,20 @@
 import ObjectDetailPage from '@/components/pages/ObjectDetailPage';
 import { BreadcrumbJsonLd } from '@/components/JsonLd';
-import { BASE_URL, PAGE_SEO, buildPageMetadata } from '@/lib/seo';
+import { BASE_URL, getStaticSeo, buildPageMetadata } from '@/lib/seo';
 
 export async function generateMetadata({ params }) {
   const { lang, id } = await params;
-  const slug = lang === 'de' ? 'objekte' : 'objects';
-  const canonical = `${BASE_URL}/${lang}/${slug}/${id}`;
+  // No per-object CMS slug yet — static fallback only
+  const seo = getStaticSeo('objectDetail', lang);
+  const pathSlug = lang === 'de' ? 'objekte' : 'objects';
+  const canonical = `${BASE_URL}/${lang}/${pathSlug}/${id}`;
 
   return buildPageMetadata({
-    title: PAGE_SEO.objectDetail.title,
-    description: PAGE_SEO.objectDetail.description,
+    title: seo.title,
+    description: seo.description,
     canonical,
+    ogImage: seo.ogImage,
+    noIndex: seo.noIndex,
     languages: {
       de: `${BASE_URL}/de/objekte/${id}`,
       en: `${BASE_URL}/en/objects/${id}`,

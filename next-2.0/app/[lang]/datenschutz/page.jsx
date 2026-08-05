@@ -1,15 +1,18 @@
 import DatenschutzPage from '@/components/pages/DatenschutzPage';
 import { BreadcrumbJsonLd } from '@/components/JsonLd';
-import { BASE_URL, PAGE_SEO, buildPageMetadata } from '@/lib/seo';
+import { BASE_URL, getPageSeo, buildPageMetadata } from '@/lib/seo';
 
 export async function generateMetadata({ params }) {
   const { lang } = await params;
-  const canonical = `${BASE_URL}/${lang}/datenschutz`;
+  const seo = await getPageSeo('datenschutz', lang);
+  const canonical = seo.canonical || `${BASE_URL}/${lang}/datenschutz`;
 
   return buildPageMetadata({
-    title: PAGE_SEO.datenschutz.title,
-    description: PAGE_SEO.datenschutz.description,
+    title: seo.title,
+    description: seo.description,
     canonical,
+    ogImage: seo.ogImage,
+    noIndex: seo.noIndex,
     languages: {
       de: `${BASE_URL}/de/datenschutz`,
       en: `${BASE_URL}/en/datenschutz`,

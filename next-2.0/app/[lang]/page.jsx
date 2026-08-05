@@ -1,16 +1,19 @@
 import HomePage from '@/components/pages/HomePage';
 import { LocalBusinessJsonLd, WebSiteJsonLd, ServicesJsonLd } from '@/components/JsonLd';
-import { BASE_URL, HOME_SEO, SITE_NAME, buildPageMetadata } from '@/lib/seo';
+import { BASE_URL, SITE_NAME, getPageSeo, buildPageMetadata } from '@/lib/seo';
 
 export async function generateMetadata({ params }) {
   const { lang } = await params;
-  const canonical = `${BASE_URL}/${lang}`;
+  const seo = await getPageSeo('home', lang);
+  const canonical = seo.canonical || `${BASE_URL}/${lang}`;
 
   return {
     ...buildPageMetadata({
-      title: HOME_SEO.title,
-      description: HOME_SEO.description,
+      title: seo.title,
+      description: seo.description,
       canonical,
+      ogImage: seo.ogImage,
+      noIndex: seo.noIndex,
       languages: {
         de: `${BASE_URL}/de`,
         en: `${BASE_URL}/en`,
