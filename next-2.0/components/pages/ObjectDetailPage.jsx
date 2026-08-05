@@ -108,8 +108,11 @@ export default function ObjectDetailPage() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={property.image}
-              alt={property.title}
+              alt={`${property.title}${property.city ? ` in ${property.city}` : ''} – verwaltet von Hausverwaltung WERT`}
               className="w-full h-[400px] md:h-[500px] object-cover"
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent" />
             <div className="absolute top-4 right-4 flex gap-2">
@@ -125,7 +128,7 @@ export default function ObjectDetailPage() {
           {/* Property details */}
           <div className="grid md:grid-cols-3 gap-10">
             <div className="md:col-span-2 space-y-6">
-              <h2 className="section-title">{property.title}</h2>
+              <p className="section-title">{property.title}</p>
               <p className="text-slate-500 flex items-center gap-2">
                 <svg className="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />

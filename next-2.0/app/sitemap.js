@@ -1,3 +1,5 @@
+import { LOCATIONS } from '@/lib/locations';
+
 const baseUrl = 'https://www.hausverwaltungwert.de';
 
 export default async function sitemap() {
@@ -6,6 +8,7 @@ export default async function sitemap() {
   const publicRoutes = [
     { path: { de: '/', en: '/' }, priority: 1.0, changeFrequency: 'monthly' },
     { path: { de: '/leistungen', en: '/services' }, priority: 0.9, changeFrequency: 'monthly' },
+    { path: { de: '/standorte', en: '/locations' }, priority: 0.85, changeFrequency: 'monthly' },
     { path: { de: '/kontakt', en: '/contact' }, priority: 0.8, changeFrequency: 'yearly' },
     { path: { de: '/objekte', en: '/objects' }, priority: 0.7, changeFrequency: 'monthly' },
     { path: { de: '/impressum', en: '/impressum' }, priority: 0.3, changeFrequency: 'yearly' },
@@ -33,11 +36,31 @@ export default async function sitemap() {
     }
   }
 
+  // Location city pages
+  for (const location of LOCATIONS) {
+    for (const lang of langs) {
+      const slug = lang === 'de' ? 'standorte' : 'locations';
+      entries.push({
+        url: `${baseUrl}/${lang}/${slug}/${location.slug}`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly',
+        priority: 0.75,
+        alternates: {
+          languages: {
+            de: `${baseUrl}/de/standorte/${location.slug}`,
+            en: `${baseUrl}/en/locations/${location.slug}`,
+            'x-default': `${baseUrl}/de/standorte/${location.slug}`,
+          },
+        },
+      });
+    }
+  }
+
   // Fetch properties from the API
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
     const res = await fetch(`${apiUrl}/properties`, {
-      next: { revalidate: 3600 }, // Revalidate every hour
+      next: { revalidate: 3600 },
     });
     if (res.ok) {
       const data = await res.json();

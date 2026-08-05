@@ -85,7 +85,13 @@ export default function ObjectsPage() {
                 >
                   <div className="relative overflow-hidden h-56">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={p.image} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img
+                      src={p.image}
+                      alt={`${p.title}${p.city ? ` – ${p.city}` : ''} | Hausverwaltung WERT`}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                      decoding="async"
+                    />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
                     <div className="absolute top-3 right-3 flex gap-2">
                       <span className="bg-accent text-slate-900 text-xs font-bold px-2 py-1">{p.units} {ot.units}</span>

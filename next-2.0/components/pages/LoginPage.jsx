@@ -56,7 +56,7 @@ export default function LoginPage() {
           <Link href={localePath(lang, '/')} className="inline-flex items-center gap-3 justify-center">
             <Image
               src="/images/logoo.png"
-              alt="WERT Logo"
+              alt="Hausverwaltung WERT Logo"
               width={160}
               height={64}
               className="h-16 w-auto object-contain"

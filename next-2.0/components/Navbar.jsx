@@ -92,7 +92,7 @@ export default function Navbar() {
         <Link href={homePath} className="py-2 flex items-center">
           <Image
             src="/images/logo.png"
-            alt="WERT Logo"
+            alt="Hausverwaltung WERT Logo"
             width={160}
             height={64}
             className="h-16 w-auto object-contain"

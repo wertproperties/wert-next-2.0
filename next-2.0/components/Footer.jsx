@@ -32,6 +32,10 @@ export default function Footer() {
               </div>
             </div>
 
+            <p className="text-sm text-slate-500 leading-relaxed max-w-md mb-4">
+              {f.desc}
+            </p>
+
             <div className="mt-4 space-y-2">
 
               {/* Office Phone */}
@@ -89,10 +93,32 @@ export default function Footer() {
             <ul className="space-y-2.5 text-sm">
               <li>
                 <Link
+                  href={localePath(lang, '/')}
+                  className="hover:text-accent transition-colors"
+                >
+                  {lang === 'de' ? 'Startseite' : 'Home'}
+                </Link>
+              </li>
+
+              <li>
+                <Link
                   href={localePath(lang, '/services')}
                   className="hover:text-accent transition-colors"
                 >
-                  {n.services}
+                  {lang === 'de'
+                    ? 'Hausverwaltung Leistungen'
+                    : 'Property Management Services'}
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  href={localePath(lang, '/locations')}
+                  className="hover:text-accent transition-colors"
+                >
+                  {lang === 'de'
+                    ? 'Standorte Metropolregion Nürnberg'
+                    : 'Nuremberg Metro Locations'}
                 </Link>
               </li>
 

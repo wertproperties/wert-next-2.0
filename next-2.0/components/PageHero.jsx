@@ -38,7 +38,7 @@ export default function PageHero({ tag, title, desc, bgImage, breadcrumbs = [] }
         {breadcrumbs.length > 0 && (
           <nav className="flex items-center gap-2 text-white/50 text-xs mb-5 uppercase tracking-wider">
             <Link href={localePath(lang, '/')} className="hover:text-accent transition-colors">
-              Home
+              {lang === 'de' ? 'Startseite' : 'Home'}
             </Link>
             {breadcrumbs.map((b, i) => (
               <span key={i} className="flex items-center gap-2">

@@ -300,9 +300,9 @@ function ContactSection() {
 
             {/* Hours */}
             <div className="p-6 border border-slate-100 bg-slate-50">
-              <h4 className="font-bold text-slate-900 mb-3 uppercase tracking-wider text-xs">
+              <h3 className="font-bold text-slate-900 mb-3 uppercase tracking-wider text-xs">
                 {lang === 'de' ? 'Öffnungszeiten' : 'Office Hours'}
-              </h4>
+              </h3>
               <div className="space-y-1 text-sm text-slate-600">
                 <p className="flex justify-between"><span>Mo – Fr</span><span className="font-medium">8:00 – 17:00</span></p>
                 <p className="flex justify-between"><span>Sa</span> <span className="font-medium text-slate-400">{lang === 'de' ? 'Geschlossen' : 'Closed'}</span></p>

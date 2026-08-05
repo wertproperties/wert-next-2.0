@@ -314,7 +314,7 @@ export default function AuthModal({ initialTab = 'login', onClose }) {
         <div className="px-8 pt-6 pb-2 text-center">
           <Image
             src="/images/logoo.png"
-            alt="WERT Logo"
+            alt="Hausverwaltung WERT Logo"
             width={160}
             height={56}
             className="h-14 w-auto object-contain mx-auto mb-3"

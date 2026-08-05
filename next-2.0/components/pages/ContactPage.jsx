@@ -6,7 +6,7 @@ import { CONTACT_EMAIL, CONTACT_PHONE, CONTACT_PHONE_HREF } from '@/lib/site';
 import PageHero from '@/components/PageHero';
 import { contactAPI } from '@/lib/api';
 export default function ContactPage() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const c = t.contactCTA;
   const cp = t.pages.contact;
 
@@ -48,9 +48,9 @@ export default function ContactPage() {
 
               {/* Hours */}
               <div className="p-6 border border-slate-100 bg-slate-50">
-                <h4 className="font-bold text-slate-900 mb-3 uppercase tracking-wider text-xs">
-                  {t.lang === 'de' ? 'Öffnungszeiten' : 'Office Hours'}
-                </h4>
+                <h3 className="font-bold text-slate-900 mb-3 uppercase tracking-wider text-xs">
+                  {lang === 'de' ? 'Öffnungszeiten' : 'Office Hours'}
+                </h3>
                 <div className="space-y-1 text-sm text-slate-600">
                   <p className="flex justify-between"><span>Mo – Fr</span><span className="font-medium">8:00 – 17:00</span></p>
                   <p className="flex justify-between"><span>Sa</span><span className="font-medium text-slate-400">Closed</span></p>
@@ -61,7 +61,7 @@ export default function ContactPage() {
 
             {/* Form */}
             <div className="lg:col-span-2">
-              <h3 className="font-serif text-2xl font-bold text-slate-900 mb-8">{c.formTitle}</h3>
+              <h2 className="font-serif text-2xl font-bold text-slate-900 mb-8">{c.formTitle}</h2>
               {status === 'success' && <div className="bg-green-50 border border-green-200 text-green-700 text-sm px-5 py-4 mb-6">{c.success}</div>}
               {status === 'error' && <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-5 py-4 mb-6">{c.error}</div>}
               <form onSubmit={handleSubmit} className="space-y-5">

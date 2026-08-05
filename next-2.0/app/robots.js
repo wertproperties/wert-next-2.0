@@ -12,14 +12,17 @@ export default function robots() {
           '/login',
           '/signup',
           '/forms/',
+          '/formulare/',
           '/*/admin',
           '/*/portal',
           '/*/login',
           '/*/signup',
           '/*/forms/',
+          '/*/formulare/',
         ],
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
+    host: baseUrl,
   };
 }

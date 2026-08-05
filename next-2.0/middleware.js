@@ -20,7 +20,12 @@ export function middleware(request) {
   );
 
   if (hasLang) {
-    return NextResponse.next();
+    const lang = pathname.split('/')[1] || DEFAULT_LANG;
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set('x-lang', lang);
+    return NextResponse.next({
+      request: { headers: requestHeaders },
+    });
   }
 
   // Redirect to default locale prefix

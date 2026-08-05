@@ -1,7 +1,8 @@
 import { Playfair_Display, Lato } from 'next/font/google';
 import Script from 'next/script';
+import { headers } from 'next/headers';
 import { AuthProvider } from '@/context/AuthContext';
-import { HOME_SEO, SITE_NAME } from '@/lib/seo';
+import { HOME_SEO, SITE_NAME, OG_IMAGE, BASE_URL } from '@/lib/seo';
 import './globals.css';
 
 const playfair = Playfair_Display({
@@ -9,6 +10,7 @@ const playfair = Playfair_Display({
   weight: ['400', '600', '700', '800'],
   variable: '--font-serif',
   display: 'swap',
+  preload: true,
 });
 
 const lato = Lato({
@@ -16,23 +18,26 @@ const lato = Lato({
   weight: ['300', '400', '700'],
   variable: '--font-sans',
   display: 'swap',
+  preload: true,
 });
 
 export const metadata = {
   title: HOME_SEO.title,
   description: HOME_SEO.description,
-  metadataBase: new URL('https://www.hausverwaltungwert.de'),
+  metadataBase: new URL(BASE_URL),
   openGraph: {
     title: HOME_SEO.title,
     description: HOME_SEO.description,
     siteName: SITE_NAME,
     locale: 'de_DE',
     type: 'website',
+    images: [{ url: OG_IMAGE, alt: SITE_NAME }],
   },
   twitter: {
     card: 'summary_large_image',
     title: HOME_SEO.title,
     description: HOME_SEO.description,
+    images: [OG_IMAGE],
   },
   icons: {
     icon: [
@@ -43,11 +48,18 @@ export const metadata = {
       { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
     ],
   },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const headersList = await headers();
+  const lang = headersList.get('x-lang') || 'de';
+
   return (
-    <html lang="de" className={`${playfair.variable} ${lato.variable}`}>
+    <html lang={lang} className={`${playfair.variable} ${lato.variable}`}>
       <head>
         {/* Google Tag Manager */}
         <Script
@@ -70,6 +82,7 @@ export default function RootLayout({ children }) {
             height="0"
             width="0"
             style={{ display: 'none', visibility: 'hidden' }}
+            title="Google Tag Manager"
           />
         </noscript>
         <AuthProvider>

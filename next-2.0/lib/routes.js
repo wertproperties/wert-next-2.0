@@ -19,7 +19,8 @@ export const SLUG_MAP = {
   '/':                { de: '/',                en: '/' },
   '/services':        { de: '/leistungen',      en: '/services' },
   '/contact':         { de: '/kontakt',         en: '/contact' },
-  '/objects':          { de: '/objekte',         en: '/objects' },
+  '/objects':         { de: '/objekte',         en: '/objects' },
+  '/locations':       { de: '/standorte',       en: '/locations' },
   '/impressum':       { de: '/impressum',       en: '/impressum' },
   '/datenschutz':     { de: '/datenschutz',     en: '/datenschutz' },
   '/login':           { de: '/login',           en: '/login' },
@@ -43,13 +44,39 @@ for (const [key, langs] of Object.entries(SLUG_MAP)) {
 }
 
 /**
+ * Resolve dynamic segments (e.g. /objects/:id, /locations/:city)
+ * against SLUG_MAP prefixes so DE/EN slugs stay consistent.
+ */
+function resolveLocalizedSlug(lang, canonicalPath) {
+  if (SLUG_MAP[canonicalPath]) {
+    return SLUG_MAP[canonicalPath][lang];
+  }
+
+  // /objects/:id → /objekte/:id (de) or /objects/:id (en)
+  const objectsMatch = canonicalPath.match(/^\/objects\/([^/]+)$/);
+  if (objectsMatch) {
+    const base = SLUG_MAP['/objects'][lang];
+    return `${base}/${objectsMatch[1]}`;
+  }
+
+  // /locations/:city → /standorte/:city (de) or /locations/:city (en)
+  const locationsMatch = canonicalPath.match(/^\/locations\/([^/]+)$/);
+  if (locationsMatch) {
+    const base = SLUG_MAP['/locations'][lang];
+    return `${base}/${locationsMatch[1]}`;
+  }
+
+  return canonicalPath;
+}
+
+/**
  * Build a localized path using the correct slug for the target language.
  * @param {string} lang - 'de' or 'en'
  * @param {string} canonicalPath - canonical path like '/services', '/contact'
  * @returns {string} e.g. '/de/leistungen' or '/en/services'
  */
 export function localePath(lang, canonicalPath = '/') {
-  const slug = SLUG_MAP[canonicalPath]?.[lang] || canonicalPath;
+  const slug = resolveLocalizedSlug(lang, canonicalPath);
   return `/${lang}${slug === '/' ? '' : slug}`;
 }
 
@@ -69,13 +96,30 @@ export function switchLangPath(currentPath, targetLang) {
   const currentLang = match[1];
   const currentSlug = match[2] || '/';
 
-  // Find the canonical key from the current language's slug
-  const canonicalKey = REVERSE_MAP[currentLang]?.[currentSlug] || currentSlug;
+  // Exact match in reverse map
+  if (REVERSE_MAP[currentLang]?.[currentSlug]) {
+    const canonicalKey = REVERSE_MAP[currentLang][currentSlug];
+    const targetSlug = SLUG_MAP[canonicalKey]?.[targetLang] || currentSlug;
+    return `/${targetLang}${targetSlug === '/' ? '' : targetSlug}`;
+  }
 
-  // Get the slug for the target language
-  const targetSlug = SLUG_MAP[canonicalKey]?.[targetLang] || currentSlug;
+  // Dynamic: /objekte/:id or /objects/:id
+  const objectMatch = currentSlug.match(/^\/(objekte|objects)\/([^/]+)$/);
+  if (objectMatch) {
+    const id = objectMatch[2];
+    const base = SLUG_MAP['/objects'][targetLang];
+    return `/${targetLang}${base}/${id}`;
+  }
 
-  return `/${targetLang}${targetSlug === '/' ? '' : targetSlug}`;
+  // Dynamic: /standorte/:city or /locations/:city
+  const locationMatch = currentSlug.match(/^\/(standorte|locations)\/([^/]+)$/);
+  if (locationMatch) {
+    const city = locationMatch[2];
+    const base = SLUG_MAP['/locations'][targetLang];
+    return `/${targetLang}${base}/${city}`;
+  }
+
+  return `/${targetLang}${currentSlug === '/' ? '' : currentSlug}`;
 }
 
 /**
