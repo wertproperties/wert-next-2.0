@@ -1,10 +1,9 @@
 import LoginPage from '@/components/pages/LoginPage';
+import { SITE_NAME } from '@/lib/seo';
 
-export async function generateMetadata({ params }) {
-  const { lang } = await params;
-  const isGerman = lang === 'de';
+export async function generateMetadata() {
   return {
-    title: isGerman ? 'Anmelden | Hausverwaltung WERT' : 'Sign In | Hausverwaltung WERT',
+    title: `Anmelden | ${SITE_NAME}`,
     robots: { index: false, follow: false },
   };
 }

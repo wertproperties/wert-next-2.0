@@ -1,32 +1,28 @@
 import DatenschutzPage from '@/components/pages/DatenschutzPage';
+import { BASE_URL, SITE_NAME } from '@/lib/seo';
 
 export async function generateMetadata({ params }) {
   const { lang } = await params;
-  const isGerman = lang === 'de';
-  const baseUrl = 'https://www.hausverwaltungwert.de';
-  const canonical = `${baseUrl}/${lang}/datenschutz`;
+  const canonical = `${BASE_URL}/${lang}/datenschutz`;
 
   return {
-    title: isGerman ? 'Datenschutzerklärung | Hausverwaltung WERT' : 'Privacy Policy | Hausverwaltung WERT',
-    description: isGerman
-      ? 'Datenschutzerklärung von Hausverwaltung WERT – Informationen zum Schutz Ihrer Daten.'
-      : 'Privacy policy of Hausverwaltung WERT – information about data protection.',
+    title: `Datenschutzerklärung | ${SITE_NAME}`,
+    description:
+      'Datenschutzerklärung von Hausverwaltung WERT – Informationen zum Schutz Ihrer Daten.',
     alternates: {
       canonical,
       languages: {
-        de: `${baseUrl}/de/datenschutz`,
-        en: `${baseUrl}/en/datenschutz`,
-        'x-default': `${baseUrl}/de/datenschutz`,
+        de: `${BASE_URL}/de/datenschutz`,
+        en: `${BASE_URL}/en/datenschutz`,
+        'x-default': `${BASE_URL}/de/datenschutz`,
       },
     },
     openGraph: {
-      title: isGerman ? 'Datenschutzerklärung | Hausverwaltung WERT' : 'Privacy Policy | Hausverwaltung WERT',
-      description: isGerman
-        ? 'Datenschutzerklärung von Hausverwaltung WERT.'
-        : 'Privacy policy of Hausverwaltung WERT.',
+      title: `Datenschutzerklärung | ${SITE_NAME}`,
+      description: 'Datenschutzerklärung von Hausverwaltung WERT.',
       url: canonical,
-      siteName: 'Hausverwaltung WERT',
-      locale: lang === 'de' ? 'de_DE' : 'en_US',
+      siteName: SITE_NAME,
+      locale: 'de_DE',
       type: 'website',
     },
     robots: { index: true, follow: true },

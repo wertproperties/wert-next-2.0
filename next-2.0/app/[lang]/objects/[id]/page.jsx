@@ -1,30 +1,27 @@
 import ObjectDetailPage from '@/components/pages/ObjectDetailPage';
+import { BASE_URL, SITE_NAME } from '@/lib/seo';
 
 export async function generateMetadata({ params }) {
   const { lang, id } = await params;
-  const isGerman = lang === 'de';
-  const baseUrl = 'https://www.hausverwaltungwert.de';
-  const slug = isGerman ? 'objekte' : 'objects';
-  const canonical = `${baseUrl}/${lang}/${slug}/${id}`;
+  const slug = lang === 'de' ? 'objekte' : 'objects';
+  const canonical = `${BASE_URL}/${lang}/${slug}/${id}`;
 
   return {
-    title: isGerman ? 'Objektdetails | Hausverwaltung WERT' : 'Property Details | Hausverwaltung WERT',
-    description: isGerman
-      ? 'Details zum verwalteten Objekt von Hausverwaltung WERT.'
-      : 'Details about the managed property from Hausverwaltung WERT.',
+    title: `Objektdetails | ${SITE_NAME}`,
+    description: 'Details zum verwalteten Objekt von Hausverwaltung WERT.',
     alternates: {
       canonical,
       languages: {
-        de: `${baseUrl}/de/objekte/${id}`,
-        en: `${baseUrl}/en/objects/${id}`,
-        'x-default': `${baseUrl}/de/objekte/${id}`,
+        de: `${BASE_URL}/de/objekte/${id}`,
+        en: `${BASE_URL}/en/objects/${id}`,
+        'x-default': `${BASE_URL}/de/objekte/${id}`,
       },
     },
     openGraph: {
-      title: isGerman ? 'Objektdetails | Hausverwaltung WERT' : 'Property Details | Hausverwaltung WERT',
+      title: `Objektdetails | ${SITE_NAME}`,
       url: canonical,
-      siteName: 'Hausverwaltung WERT',
-      locale: lang === 'de' ? 'de_DE' : 'en_US',
+      siteName: SITE_NAME,
+      locale: 'de_DE',
       type: 'website',
     },
     robots: { index: true, follow: true },

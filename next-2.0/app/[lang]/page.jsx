@@ -1,35 +1,33 @@
-import translations from '@/lib/translations';
 import HomePage from '@/components/pages/HomePage';
+import { BASE_URL, HOME_SEO, SITE_NAME } from '@/lib/seo';
 
 export async function generateMetadata({ params }) {
   const { lang } = await params;
-  const t = translations[lang] || translations.de;
-  const baseUrl = 'https://www.hausverwaltungwert.de';
-  const canonical = `${baseUrl}/${lang}`;
+  const canonical = `${BASE_URL}/${lang}`;
 
   return {
-    title: `${t.hero.title} | ${t.hero.subtitle}`,
-    description: t.hero.bullets[0],
+    title: HOME_SEO.title,
+    description: HOME_SEO.description,
     alternates: {
       canonical,
       languages: {
-        de: `${baseUrl}/de`,
-        en: `${baseUrl}/en`,
-        'x-default': `${baseUrl}/de`,
+        de: `${BASE_URL}/de`,
+        en: `${BASE_URL}/en`,
+        'x-default': `${BASE_URL}/de`,
       },
     },
     openGraph: {
-      title: `${t.hero.title} | ${t.hero.subtitle}`,
-      description: t.hero.bullets[0],
+      title: HOME_SEO.title,
+      description: HOME_SEO.description,
       url: canonical,
-      siteName: 'Hausverwaltung WERT',
-      locale: lang === 'de' ? 'de_DE' : 'en_US',
+      siteName: SITE_NAME,
+      locale: 'de_DE',
       type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${t.hero.title} | ${t.hero.subtitle}`,
-      description: t.hero.bullets[0],
+      title: HOME_SEO.title,
+      description: HOME_SEO.description,
     },
     robots: { index: true, follow: true },
   };

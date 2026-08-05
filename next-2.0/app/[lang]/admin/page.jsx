@@ -1,10 +1,9 @@
 import AdminPage from '@/components/pages/AdminPage';
+import { SITE_NAME } from '@/lib/seo';
 
-export async function generateMetadata({ params }) {
-  const { lang } = await params;
-  const isGerman = lang === 'de';
+export async function generateMetadata() {
   return {
-    title: isGerman ? 'Admin | Hausverwaltung WERT' : 'Admin | Hausverwaltung WERT',
+    title: `Admin | ${SITE_NAME}`,
     robots: { index: false, follow: false },
   };
 }

@@ -1,12 +1,11 @@
 import translations from '@/lib/translations';
 import TenantChangePage from '@/components/pages/TenantChangePage';
+import { SITE_NAME } from '@/lib/seo';
 
-export async function generateMetadata({ params }) {
-  const { lang } = await params;
-  const t = translations[lang] || translations.de;
-  const tc = t.pages.forms.tenant;
+export async function generateMetadata() {
+  const tc = translations.de.pages.forms.tenant;
   return {
-    title: `${tc.title} | Hausverwaltung WERT`,
+    title: `${tc.title} | ${SITE_NAME}`,
     description: tc.heroDesc,
     robots: { index: false, follow: true },
   };
