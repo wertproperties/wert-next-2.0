@@ -103,12 +103,227 @@ async function ensureSeoDefaults() {
   }
 }
 
+const CSV_HEADERS = [
+  'slug',
+  'titleDe',
+  'descriptionDe',
+  'titleEn',
+  'descriptionEn',
+  'ogImage',
+  'canonical',
+  'noIndex',
+];
+
+function escapeCsv(value) {
+  const s = String(value ?? '');
+  if (/[",\n\r]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+  return s;
+}
+
+function rowsToCsv(rows) {
+  const lines = [CSV_HEADERS.join(',')];
+  for (const row of rows) {
+    lines.push(
+      CSV_HEADERS.map((h) => {
+        if (h === 'noIndex') return row.noIndex ? 'true' : 'false';
+        return escapeCsv(row[h]);
+      }).join(',')
+    );
+  }
+  return `${lines.join('\n')}\n`;
+}
+
+/** RFC-4180 style CSV parse (supports quoted commas/newlines). */
+function parseCsv(text) {
+  const rows = [];
+  let row = [];
+  let field = '';
+  let i = 0;
+  let inQuotes = false;
+  const input = String(text || '').replace(/^\uFEFF/, '');
+
+  while (i < input.length) {
+    const ch = input[i];
+    if (inQuotes) {
+      if (ch === '"') {
+        if (input[i + 1] === '"') {
+          field += '"';
+          i += 2;
+          continue;
+        }
+        inQuotes = false;
+        i += 1;
+        continue;
+      }
+      field += ch;
+      i += 1;
+      continue;
+    }
+
+    if (ch === '"') {
+      inQuotes = true;
+      i += 1;
+      continue;
+    }
+    if (ch === ',') {
+      row.push(field);
+      field = '';
+      i += 1;
+      continue;
+    }
+    if (ch === '\n' || ch === '\r') {
+      if (ch === '\r' && input[i + 1] === '\n') i += 1;
+      row.push(field);
+      field = '';
+      if (row.some((c) => String(c).trim() !== '')) rows.push(row);
+      row = [];
+      i += 1;
+      continue;
+    }
+    field += ch;
+    i += 1;
+  }
+
+  row.push(field);
+  if (row.some((c) => String(c).trim() !== '')) rows.push(row);
+  return rows;
+}
+
+function parseBool(value) {
+  const v = String(value ?? '').trim().toLowerCase();
+  return v === 'true' || v === '1' || v === 'yes' || v === 'y';
+}
+
+function csvRowsToSeoRecords(csvText) {
+  const matrix = parseCsv(csvText);
+  if (!matrix.length) {
+    return { records: [], errors: ['CSV is empty'] };
+  }
+
+  const header = matrix[0].map((h) => String(h).trim());
+  const missing = CSV_HEADERS.filter((h) => !header.includes(h));
+  if (missing.length) {
+    return {
+      records: [],
+      errors: [`Missing required columns: ${missing.join(', ')}`],
+    };
+  }
+
+  const index = Object.fromEntries(header.map((h, i) => [h, i]));
+  const records = [];
+  const errors = [];
+
+  for (let r = 1; r < matrix.length; r += 1) {
+    const cols = matrix[r];
+    const slug = String(cols[index.slug] || '')
+      .trim()
+      .toLowerCase();
+    if (!slug) {
+      errors.push(`Row ${r + 1}: empty slug — skipped`);
+      continue;
+    }
+    if (!PageSeo.ALLOWED_SLUGS.includes(slug)) {
+      errors.push(
+        `Row ${r + 1}: invalid slug "${slug}" — allowed: ${PageSeo.ALLOWED_SLUGS.join(', ')}`
+      );
+      continue;
+    }
+
+    records.push({
+      slug,
+      titleDe: String(cols[index.titleDe] ?? '').trim(),
+      descriptionDe: String(cols[index.descriptionDe] ?? '').trim(),
+      titleEn: String(cols[index.titleEn] ?? '').trim(),
+      descriptionEn: String(cols[index.descriptionEn] ?? '').trim(),
+      ogImage: String(cols[index.ogImage] ?? '').trim(),
+      canonical: String(cols[index.canonical] ?? '').trim(),
+      noIndex: parseBool(cols[index.noIndex]),
+    });
+  }
+
+  return { records, errors };
+}
+
 // GET /api/seo
 exports.getAllSeo = async (req, res) => {
   try {
     await ensureSeoDefaults();
     const entries = await PageSeo.find().sort({ slug: 1 });
     res.json({ success: true, count: entries.length, data: entries });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// GET /api/seo/export  (admin) — download CSV of all SEO rows
+exports.exportSeoCsv = async (req, res) => {
+  try {
+    await ensureSeoDefaults();
+    const entries = await PageSeo.find().sort({ slug: 1 }).lean();
+    const csv = rowsToCsv(entries);
+    const filename = `seo-export-${new Date().toISOString().slice(0, 10)}.csv`;
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.send(`\uFEFF${csv}`);
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// GET /api/seo/template  (admin) — example CSV matching import format
+exports.downloadSeoTemplate = async (req, res) => {
+  try {
+    const csv = rowsToCsv(SEO_DEFAULTS);
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename="seo-import-example.csv"'
+    );
+    res.send(`\uFEFF${csv}`);
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// POST /api/seo/import  (admin) — upload CSV and upsert rows
+exports.importSeoCsv = async (req, res) => {
+  try {
+    if (!req.file || !req.file.buffer) {
+      return res.status(400).json({
+        success: false,
+        message: 'CSV file is required (field name: file)',
+      });
+    }
+
+    const text = req.file.buffer.toString('utf8');
+    const { records, errors } = csvRowsToSeoRecords(text);
+
+    if (!records.length) {
+      return res.status(400).json({
+        success: false,
+        message: 'No valid SEO rows found in CSV',
+        errors,
+      });
+    }
+
+    let updated = 0;
+    for (const record of records) {
+      await PageSeo.findOneAndUpdate(
+        { slug: record.slug },
+        { $set: record },
+        { upsert: true, runValidators: true, new: true }
+      );
+      updated += 1;
+    }
+
+    const entries = await PageSeo.find().sort({ slug: 1 });
+    res.json({
+      success: true,
+      message: `Imported ${updated} SEO row(s)`,
+      count: updated,
+      errors,
+      data: entries,
+    });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
@@ -183,3 +398,5 @@ exports.seedSeo = async (req, res) => {
 
 exports.SEO_DEFAULTS = SEO_DEFAULTS;
 exports.ensureSeoDefaults = ensureSeoDefaults;
+exports.rowsToCsv = rowsToCsv;
+exports.CSV_HEADERS = CSV_HEADERS;

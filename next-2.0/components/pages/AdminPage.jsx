@@ -544,33 +544,46 @@ const EMPTY_SEO_FORM = {
 };
 
 /* ─── SEO PANEL ─────────────────────────────────────────────────── */
-function SeoPanel({ getAllSeo, updateSeo, seedSeo }) {
+function SeoPanel({
+  getAllSeo,
+  updateSeo,
+  seedSeo,
+  exportSeoCsv,
+  downloadSeoTemplate,
+  importSeoCsv,
+}) {
   const [entries, setEntries]     = useState([]);
   const [forms, setForms]         = useState({});
   const [loading, setLoading]     = useState(true);
   const [saving, setSaving]       = useState({});
   const [status, setStatus]       = useState({});
   const [expanded, setExpanded]   = useState('home');
+  const [csvBusy, setCsvBusy]     = useState(false);
+  const [csvMsg, setCsvMsg]       = useState(null);
+  const fileInputRef              = useRef(null);
+
+  const applyList = (list) => {
+    setEntries(list);
+    const next = {};
+    for (const e of list) {
+      next[e.slug] = {
+        titleDe: e.titleDe || '',
+        descriptionDe: e.descriptionDe || '',
+        titleEn: e.titleEn || '',
+        descriptionEn: e.descriptionEn || '',
+        ogImage: e.ogImage || '',
+        canonical: e.canonical || '',
+        noIndex: !!e.noIndex,
+      };
+    }
+    setForms(next);
+  };
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const res = await getAllSeo();
-      const list = res.data.data || [];
-      setEntries(list);
-      const next = {};
-      for (const e of list) {
-        next[e.slug] = {
-          titleDe: e.titleDe || '',
-          descriptionDe: e.descriptionDe || '',
-          titleEn: e.titleEn || '',
-          descriptionEn: e.descriptionEn || '',
-          ogImage: e.ogImage || '',
-          canonical: e.canonical || '',
-          noIndex: !!e.noIndex,
-        };
-      }
-      setForms(next);
+      applyList(res.data.data || []);
     } catch (err) {
       console.error(err);
     } finally {
@@ -614,6 +627,76 @@ function SeoPanel({ getAllSeo, updateSeo, seedSeo }) {
     }
   };
 
+  const downloadBlob = (blob, filename) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExport = async () => {
+    setCsvBusy(true);
+    setCsvMsg(null);
+    try {
+      const res = await exportSeoCsv();
+      downloadBlob(res.data, `seo-export-${new Date().toISOString().slice(0, 10)}.csv`);
+      setCsvMsg({ type: 'ok', msg: 'CSV exported' });
+    } catch (err) {
+      setCsvMsg({ type: 'err', msg: err.response?.data?.message || 'Export failed' });
+    } finally {
+      setCsvBusy(false);
+    }
+  };
+
+  const handleDownloadTemplate = async () => {
+    setCsvBusy(true);
+    setCsvMsg(null);
+    try {
+      const res = await downloadSeoTemplate();
+      downloadBlob(res.data, 'seo-import-example.csv');
+      setCsvMsg({ type: 'ok', msg: 'Example CSV downloaded' });
+    } catch (err) {
+      // Fallback to static public example if API template fails
+      window.open('/examples/seo-import-example.csv', '_blank');
+      setCsvMsg({ type: 'ok', msg: 'Opened example CSV' });
+    } finally {
+      setCsvBusy(false);
+    }
+  };
+
+  const handleImportFile = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+
+    setCsvBusy(true);
+    setCsvMsg(null);
+    try {
+      const res = await importSeoCsv(file);
+      applyList(res.data.data || []);
+      const warn = (res.data.errors || []).length
+        ? ` (${res.data.errors.length} warning(s))`
+        : '';
+      setCsvMsg({
+        type: 'ok',
+        msg: `${res.data.message || 'Import complete'}${warn}`,
+      });
+    } catch (err) {
+      const data = err.response?.data;
+      setCsvMsg({
+        type: 'err',
+        msg: data?.message || 'Import failed',
+        details: data?.errors,
+      });
+    } finally {
+      setCsvBusy(false);
+    }
+  };
+
   if (loading) return <div className="text-center py-12 text-stone-400">Loading SEO…</div>;
 
   const slugs = entries.length
@@ -622,20 +705,84 @@ function SeoPanel({ getAllSeo, updateSeo, seedSeo }) {
 
   return (
     <div className="space-y-4 max-w-4xl">
-      <div className="flex items-center justify-between gap-4 flex-wrap">
+      <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h2 className="font-bold text-stone-900 text-xl">Page SEO</h2>
           <p className="text-stone-500 text-sm mt-1">
             Edit title, description and Open Graph fields per page (DE / EN).
+            Import/export via CSV using the example format.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={handleSeed}
-          className="text-xs font-bold uppercase tracking-wider px-4 py-2 border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 rounded"
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            disabled={csvBusy}
+            onClick={handleDownloadTemplate}
+            className="text-xs font-bold uppercase tracking-wider px-4 py-2 border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 rounded disabled:opacity-60"
+          >
+            Example CSV
+          </button>
+          <button
+            type="button"
+            disabled={csvBusy}
+            onClick={handleExport}
+            className="text-xs font-bold uppercase tracking-wider px-4 py-2 border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 rounded disabled:opacity-60"
+          >
+            Export CSV
+          </button>
+          <button
+            type="button"
+            disabled={csvBusy}
+            onClick={() => fileInputRef.current?.click()}
+            className="text-xs font-bold uppercase tracking-wider px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white rounded disabled:opacity-60"
+          >
+            Import CSV
+          </button>
+          <button
+            type="button"
+            onClick={handleSeed}
+            className="text-xs font-bold uppercase tracking-wider px-4 py-2 border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 rounded"
+          >
+            Ensure defaults
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".csv,text/csv"
+            className="hidden"
+            onChange={handleImportFile}
+          />
+        </div>
+      </div>
+
+      {csvMsg && (
+        <div
+          className={`text-sm px-4 py-3 rounded border ${
+            csvMsg.type === 'ok'
+              ? 'bg-green-50 border-green-200 text-green-700'
+              : 'bg-red-50 border-red-200 text-red-700'
+          }`}
         >
-          Ensure defaults
-        </button>
+          <p className="font-medium">{csvMsg.msg}</p>
+          {csvMsg.details?.length > 0 && (
+            <ul className="mt-2 list-disc pl-5 space-y-0.5 text-xs">
+              {csvMsg.details.map((d, i) => (
+                <li key={i}>{d}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+
+      <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3 text-xs text-stone-600">
+        <p className="font-bold text-stone-800 mb-1">CSV columns (required)</p>
+        <code className="break-all">
+          slug,titleDe,descriptionDe,titleEn,descriptionEn,ogImage,canonical,noIndex
+        </code>
+        <p className="mt-2">
+          Allowed slugs: home, services, contact, objects, impressum, datenschutz, locations.
+          Use <strong>true</strong>/<strong>false</strong> for noIndex.
+        </p>
       </div>
 
       {slugs.map((slug) => {
@@ -757,7 +904,7 @@ function SeoPanel({ getAllSeo, updateSeo, seedSeo }) {
 export default function AdminPage() {
   const { user, loading: authLoading, logout, isAdmin, getAdminStats, getAllUsers, createUser, updateUser, deleteUser,
     getAllContacts, getAllDamages, getAllKeys, getAllTenants, getAllProperties, seedProperties, createProperty,
-    getAllSeo, updateSeo, seedSeo } = useAuth();
+    getAllSeo, updateSeo, seedSeo, exportSeoCsv, downloadSeoTemplate, importSeoCsv } = useAuth();
   const { lang } = useLang();
   const router = useRouter();
   const [tab, setTab]           = useState('overview');
@@ -866,7 +1013,16 @@ export default function AdminPage() {
 
           {tab === 'properties' && <PropertiesPanel getAllProperties={getAllProperties} seedProperties={seedProperties} createProperty={createProperty} />}
 
-          {tab === 'seo' && <SeoPanel getAllSeo={getAllSeo} updateSeo={updateSeo} seedSeo={seedSeo} />}
+          {tab === 'seo' && (
+            <SeoPanel
+              getAllSeo={getAllSeo}
+              updateSeo={updateSeo}
+              seedSeo={seedSeo}
+              exportSeoCsv={exportSeoCsv}
+              downloadSeoTemplate={downloadSeoTemplate}
+              importSeoCsv={importSeoCsv}
+            />
+          )}
 
           {tab === 'contacts' && (
             <ListPanel title="Contact Inquiries" loadFn={getAllContacts}

@@ -77,6 +77,17 @@ export const AuthProvider = ({ children }) => {
   const getSeo     = (slug)         => API.get(`/seo/${slug}`);
   const updateSeo  = (slug, data)   => API.put(`/seo/${slug}`, data);
   const seedSeo    = ()             => API.post('/seo/seed');
+  const exportSeoCsv = () =>
+    API.get('/seo/export', { responseType: 'blob' });
+  const downloadSeoTemplate = () =>
+    API.get('/seo/template', { responseType: 'blob' });
+  const importSeoCsv = (file) => {
+    const form = new FormData();
+    form.append('file', file);
+    return API.post('/seo/import', form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  };
 
   return (
     <AuthContext.Provider
@@ -104,6 +115,9 @@ export const AuthProvider = ({ children }) => {
         getSeo,
         updateSeo,
         seedSeo,
+        exportSeoCsv,
+        downloadSeoTemplate,
+        importSeoCsv,
         isAdmin: user?.role === 'admin',
         isLoggedIn: !!user,
       }}
