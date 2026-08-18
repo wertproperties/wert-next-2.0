@@ -145,7 +145,10 @@ export const translations = {
       link: 'The Ten Professional Principles',
     },
     footer: {
-      desc: 'Your reliable partner for professional property management for over 55 years.',
+      desc: 'Professional property management for Nuremberg and the surrounding area.',
+      tagline: 'Personal. Competent. Reliable.',
+      ctaQuestion: 'Looking for a new property manager?',
+      ctaAction: 'Submit a no-obligation inquiry now.',
       navigation: 'Navigation',
       legal: 'Legal',
       links: { impressum: 'Imprint', datenschutz: 'Privacy Policy', info: 'Information Obligations', verfahren: 'Public Processing Register' },
@@ -379,7 +382,10 @@ export const translations = {
       link: 'Die zehn Berufsgrundsätze',
     },
     footer: {
-      desc: 'Ihr verlässlicher Partner für professionelle Hausverwaltung seit über 55 Jahren.',
+      desc: 'Professionelle Hausverwaltung für Nürnberg und Umgebung.',
+      tagline: 'Persönlich. Kompetent. Zuverlässig.',
+      ctaQuestion: 'Sie suchen eine neue Hausverwaltung?',
+      ctaAction: 'Jetzt unverbindlich Anfrage stellen.',
       navigation: 'Navigation',
       legal: 'Rechtliches',
       links: { impressum: 'Impressum', datenschutz: 'Datenschutz', info: 'Informationspflicht', verfahren: 'Öffentliches Verfahrensverzeichnis' },

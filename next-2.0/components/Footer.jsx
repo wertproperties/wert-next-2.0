@@ -1,14 +1,23 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useLang } from '@/context/LangContext';
 import { CONTACT_EMAIL, CONTACT_ADDRESS } from '@/lib/site';
 import { localePath } from '@/lib/routes';
 
 export default function Footer() {
   const { t, lang } = useLang();
+  const pathname = usePathname();
   const f = t.footer;
   const n = t.nav;
+  const contactPath = localePath(lang, '/contact');
+
+  const handleInquiryClick = (e) => {
+    if (pathname !== contactPath) return;
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <footer className="bg-slate-950 text-slate-400">
@@ -32,9 +41,22 @@ export default function Footer() {
               </div>
             </div>
 
-            <p className="text-sm text-slate-500 leading-relaxed max-w-md mb-4">
+            <p className="text-sm text-slate-500 leading-relaxed whitespace-nowrap max-sm:whitespace-normal">
               {f.desc}
             </p>
+            <p className="text-sm text-slate-400 font-medium mt-1 max-w-md">
+              {f.tagline}
+            </p>
+            <p className="text-sm text-slate-500 mt-3 max-w-md">
+              {f.ctaQuestion}
+            </p>
+            <Link
+              href={contactPath}
+              onClick={handleInquiryClick}
+              className="inline-block text-sm text-accent hover:text-accent-light font-semibold mt-1 mb-4 transition-colors"
+            >
+              {f.ctaAction}
+            </Link>
 
             <div className="mt-4 space-y-2">
 
