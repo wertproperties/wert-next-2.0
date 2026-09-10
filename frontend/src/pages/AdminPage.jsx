@@ -343,7 +343,9 @@ function Overview({ stats }) {
             rows={(d.recentContacts || []).map(c => [
               `${c.firstName} ${c.lastName}`,
               <a href={`mailto:${c.email}`} className="text-amber-600 hover:underline">{c.email}</a>,
-              <span className="max-w-xs block">{c.message?}</span>,
+              <span className="block whitespace-pre-wrap break-words min-w-[300px] max-w-[500px]">
+              {c.message || '—'}
+              </span>,
               <Badge status={c.status} />,
               new Date(c.createdAt).toLocaleDateString(),
             ])}
