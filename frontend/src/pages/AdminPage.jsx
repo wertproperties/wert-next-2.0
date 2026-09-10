@@ -35,19 +35,44 @@ function StatCard({ icon, label, value, sub, color = 'accent' }) {
 }
 
 function DataTable({ headers, rows, emptyMsg = 'No data' }) {
-  if (!rows || rows.length === 0) return <div className="text-center py-12 text-stone-400 text-sm">{emptyMsg}</div>;
+  if (!rows || rows.length === 0) {
+    return (
+      <div className="text-center py-12 text-stone-400 text-sm">
+        {emptyMsg}
+      </div>
+    );
+  }
+
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-sm">
+      <table className="w-full min-w-max text-sm">
         <thead>
           <tr className="border-b-2 border-stone-200">
-            {headers.map(h => <th key={h} className="text-left text-xs font-bold uppercase tracking-wider text-stone-500 px-4 py-3">{h}</th>)}
+            {headers.map(h => (
+              <th
+                key={h}
+                className="text-left text-xs font-bold uppercase tracking-wider text-stone-500 px-4 py-3 whitespace-nowrap"
+              >
+                {h}
+              </th>
+            ))}
           </tr>
         </thead>
+
         <tbody>
           {rows.map((row, i) => (
-            <tr key={i} className="border-b border-stone-100 hover:bg-stone-50">
-              {row.map((cell, j) => <td key={j} className="px-4 py-3 text-stone-700">{cell}</td>)}
+            <tr
+              key={i}
+              className="border-b border-stone-100 hover:bg-stone-50"
+            >
+              {row.map((cell, j) => (
+                <td
+                  key={j}
+                  className="px-4 py-3 text-stone-700 align-top"
+                >
+                  {cell}
+                </td>
+              ))}
             </tr>
           ))}
         </tbody>
