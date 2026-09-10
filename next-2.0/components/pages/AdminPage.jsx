@@ -343,7 +343,9 @@ function Overview({ stats }) {
             rows={(d.recentContacts || []).map(c => [
               `${c.firstName} ${c.lastName}`,
               <a key={c.email} href={`mailto:${c.email}`} className="text-amber-600 hover:underline">{c.email}</a>,
-              <span key={c._id} className="max-w-xs truncate block">{c.message?.slice(0, 60)}...</span>,
+              <span className="block whitespace-pre-wrap break-words">
+  {c.message || '—'}
+</span>,
               <Badge key={`b-${c._id}`} status={c.status} />,
               new Date(c.createdAt).toLocaleDateString(),
             ])}
@@ -641,7 +643,9 @@ export default function AdminPage() {
                 `${c.firstName} ${c.lastName}`,
                 <a key={c.email} href={`mailto:${c.email}`} className="text-amber-600 hover:underline">{c.email}</a>,
                 c.phone || '—', c.subject || '—',
-                <span key={c._id} className="block max-w-xs truncate">{c.message}</span>,
+                <span className="block whitespace-pre-wrap break-words">
+  {c.message || '—'}
+</span>,
                 <Badge key={`b-${c._id}`} status={c.status} />,
                 new Date(c.createdAt).toLocaleDateString(),
               ]}
