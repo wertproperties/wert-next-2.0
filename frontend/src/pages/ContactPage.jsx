@@ -3,6 +3,8 @@ import { useLang } from '../context/LangContext';
 import { CONTACT_EMAIL, CONTACT_PHONE, CONTACT_PHONE_HREF } from '../config/site';
 import PageHero from '../components/PageHero';
 import { contactAPI } from '../utils/api';
+import { sanitizeHtml } from '../utils/inquiryMessage';
+import RichTextField from '../components/RichTextField';
 
 export default function ContactPage() {
   const { t } = useLang();
@@ -16,7 +18,11 @@ export default function ContactPage() {
   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
   const handleSubmit = async e => {
     e.preventDefault(); setLoading(true);
-    try { await contactAPI.submit(form); setStatus('success'); setForm({ firstName: '', lastName: '', email: '', phone: '', subject: '', message: '' }); }
+    try {
+      await contactAPI.submit({ ...form, message: sanitizeHtml(form.message) });
+      setStatus('success');
+      setForm({ firstName: '', lastName: '', email: '', phone: '', subject: '', message: '' });
+    }
     catch { setStatus('error'); }
     finally { setLoading(false); }
   };
@@ -91,7 +97,12 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <label className="form-label">{c.message}</label>
-                  <textarea name="message" value={form.message} onChange={handleChange} required rows={6} className="input-field resize-none" />
+                  <RichTextField
+                    name="message"
+                    value={form.message}
+                    onChange={(message) => setForm({ ...form, message })}
+                    required
+                  />
                 </div>
                 <button type="submit" disabled={loading} className="btn-dark disabled:opacity-60 w-full sm:w-auto px-12">
                   {loading ? c.sending : c.send}

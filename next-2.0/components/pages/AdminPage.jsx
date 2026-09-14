@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useLang } from '@/context/LangContext';
 import { localePath } from '@/lib/routes';
+import { InquiryMessageBody, previewInquiryMessage } from '@/lib/inquiryMessage';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
 
@@ -71,6 +72,99 @@ function Badge({ status }) {
     low: 'bg-green-100 text-green-700', medium: 'bg-yellow-100 text-yellow-700', high: 'bg-orange-100 text-orange-700', emergency: 'bg-red-100 text-red-700',
   };
   return <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${map[status] || 'bg-stone-100 text-stone-600'}`}>{status}</span>;
+}
+
+function InquiryMessageCell({ inquiry }) {
+  const [open, setOpen] = useState(false);
+  const text = inquiry?.message || '';
+  const preview = previewInquiryMessage(text);
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="group flex items-center gap-2 max-w-xs text-left"
+        title="View full message"
+      >
+        <span className="truncate text-stone-700 group-hover:text-amber-700">{preview || '—'}</span>
+        {text && (
+          <span className="shrink-0 text-[11px] font-bold uppercase tracking-wide text-amber-600 group-hover:underline">
+            View
+          </span>
+        )}
+      </button>
+      {open && <InquiryDetailModal inquiry={inquiry} onClose={() => setOpen(false)} />}
+    </>
+  );
+}
+
+function InquiryDetailModal({ inquiry, onClose }) {
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [onClose]);
+
+  const name = `${inquiry.firstName || ''} ${inquiry.lastName || ''}`.trim() || '—';
+  const date = inquiry.createdAt ? new Date(inquiry.createdAt).toLocaleString() : '—';
+
+  return (
+    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="inquiry-title">
+      <div className="absolute inset-0 bg-stone-900/50" onClick={onClose} />
+      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+        <div className="px-6 py-4 border-b border-stone-100 flex items-start justify-between gap-4">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wider text-stone-400">Contact Inquiry</p>
+            <h3 id="inquiry-title" className="font-bold text-stone-900 text-lg mt-0.5">{name}</h3>
+          </div>
+          <button type="button" onClick={onClose} className="text-stone-400 hover:text-stone-700 text-2xl leading-none px-1" aria-label="Close">×</button>
+        </div>
+        <div className="px-6 py-5 overflow-y-auto space-y-4">
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-stone-400 mb-1">Email</p>
+              {inquiry.email
+                ? <a href={`mailto:${inquiry.email}`} className="text-amber-600 hover:underline break-all">{inquiry.email}</a>
+                : <p className="text-stone-700">—</p>}
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-stone-400 mb-1">Phone</p>
+              {inquiry.phone
+                ? <a href={`tel:${inquiry.phone}`} className="text-stone-800 hover:text-amber-700">{inquiry.phone}</a>
+                : <p className="text-stone-700">—</p>}
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-stone-400 mb-1">Subject</p>
+              <p className="text-stone-800">{inquiry.subject || '—'}</p>
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-stone-400 mb-1">Status</p>
+              <Badge status={inquiry.status} />
+            </div>
+            <div className="col-span-2">
+              <p className="text-xs font-bold uppercase tracking-wider text-stone-400 mb-1">Date</p>
+              <p className="text-stone-800">{date}</p>
+            </div>
+          </div>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wider text-stone-400 mb-2">Message</p>
+            <div className="bg-stone-50 border border-stone-100 rounded-xl px-4 py-3">
+              <InquiryMessageBody text={inquiry.message} />
+            </div>
+          </div>
+        </div>
+        <div className="px-6 py-4 border-t border-stone-100 flex justify-end">
+          <button type="button" onClick={onClose} className="border border-stone-200 text-stone-700 px-5 py-2 text-sm rounded-lg hover:bg-stone-50 font-medium">Close</button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 /* ─── CHAT PANEL ────────────────────────────────────────────────── */
@@ -343,7 +437,7 @@ function Overview({ stats }) {
             rows={(d.recentContacts || []).map(c => [
               `${c.firstName} ${c.lastName}`,
               <a key={c.email} href={`mailto:${c.email}`} className="text-amber-600 hover:underline">{c.email}</a>,
-              <span key={c._id} className="max-w-xs truncate block">{c.message?.slice(0, 60)}...</span>,
+              <InquiryMessageCell key={c._id} inquiry={c} />,
               <Badge key={`b-${c._id}`} status={c.status} />,
               new Date(c.createdAt).toLocaleDateString(),
             ])}
@@ -1031,7 +1125,7 @@ export default function AdminPage() {
                 `${c.firstName} ${c.lastName}`,
                 <a key={c.email} href={`mailto:${c.email}`} className="text-amber-600 hover:underline">{c.email}</a>,
                 c.phone || '—', c.subject || '—',
-                <span key={c._id} className="block max-w-xs truncate">{c.message}</span>,
+                <InquiryMessageCell key={c._id} inquiry={c} />,
                 <Badge key={`b-${c._id}`} status={c.status} />,
                 new Date(c.createdAt).toLocaleDateString(),
               ]}
