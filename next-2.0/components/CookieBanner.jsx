@@ -4,8 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useLang } from '@/context/LangContext';
 import { localePath } from '@/lib/routes';
-
-const COOKIE_KEY = 'wert_cookie_consent';
+import { COOKIE_CONSENT_KEY, persistConsent, readConsent } from '@/lib/cookieConsent';
 
 export default function CookieBanner() {
   const { lang } = useLang();
@@ -19,49 +18,28 @@ export default function CookieBanner() {
   });
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(COOKIE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (parsed && parsed.timestamp && parsed.version) {
-          return;
-        }
-      }
-      localStorage.removeItem(COOKIE_KEY);
-    } catch {
-      localStorage.removeItem(COOKIE_KEY);
-    }
+    const existing = readConsent();
+    if (existing) return;
+    try { localStorage.removeItem(COOKIE_CONSENT_KEY); } catch { /* ignore */ }
     const timer = setTimeout(() => setVisible(true), 600);
     return () => clearTimeout(timer);
   }, []);
 
-  const saveConsent = (accepted) => {
-    const consent = {
-      necessary: true,
-      functional: accepted ? prefs.functional : false,
-      analytics: accepted ? prefs.analytics : false,
-      marketing: accepted ? prefs.marketing : false,
-      timestamp: new Date().toISOString(),
-      version: '1.0',
-    };
-    localStorage.setItem(COOKIE_KEY, JSON.stringify(consent));
+  const acceptAll = () => {
+    persistConsent({ functional: true, analytics: true, marketing: true });
     setVisible(false);
-    window.dispatchEvent(new CustomEvent('cookieConsentSet', { detail: consent }));
   };
 
-  const acceptAll = () => {
-    const consent = {
-      necessary: true, functional: true, analytics: true, marketing: true,
-      timestamp: new Date().toISOString(), version: '1.0',
-    };
-    localStorage.setItem(COOKIE_KEY, JSON.stringify(consent));
+  const saveSelection = () => {
+    persistConsent(prefs);
     setVisible(false);
-    window.dispatchEvent(new CustomEvent('cookieConsentSet', { detail: consent }));
   };
 
   const rejectAll = () => {
-    setPrefs({ necessary: true, functional: false, analytics: false, marketing: false });
-    saveConsent(false);
+    const rejected = { necessary: true, functional: false, analytics: false, marketing: false };
+    setPrefs(rejected);
+    persistConsent(rejected);
+    setVisible(false);
   };
 
   if (!visible) return null;
@@ -172,7 +150,7 @@ export default function CookieBanner() {
               Alle akzeptieren / Accept All
             </button>
             <button
-              onClick={() => saveConsent(true)}
+              onClick={saveSelection}
               className="flex-1 sm:flex-none bg-stone-800 hover:bg-stone-700 text-white font-bold px-6 py-2.5 text-sm uppercase tracking-wider rounded-lg transition-colors"
             >
               Auswahl speichern / Save Selection

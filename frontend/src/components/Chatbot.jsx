@@ -381,6 +381,7 @@
 
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { isCategoryAllowed } from '../utils/cookieConsent';
 
 // ─── Constants ────────────────────────────────────────────────────
 const SESSION_KEY   = 'wert_chat_session';
@@ -388,19 +389,35 @@ const VISITOR_KEY   = 'wert_chat_visitor';
 const POLL_INTERVAL = 3000; // ms — poll every 3 seconds for new admin replies
 const API_BASE      = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
 
+let memorySessionId = '';
+
 function getOrCreateSession() {
+  if (!isCategoryAllowed('functional')) {
+    try { sessionStorage.removeItem(SESSION_KEY); } catch { /* ignore */ }
+    if (!memorySessionId) {
+      memorySessionId = 'sess_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+    }
+    return memorySessionId;
+  }
   let id = sessionStorage.getItem(SESSION_KEY);
   if (!id) {
-    id = 'sess_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+    id = memorySessionId || ('sess_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now());
     sessionStorage.setItem(SESSION_KEY, id);
   }
   return id;
 }
 
 function getVisitor() {
+  if (!isCategoryAllowed('functional')) {
+    try { localStorage.removeItem(VISITOR_KEY); } catch { /* ignore */ }
+    return {};
+  }
   try { return JSON.parse(localStorage.getItem(VISITOR_KEY) || '{}'); } catch { return {}; }
 }
-function saveVisitor(v) { localStorage.setItem(VISITOR_KEY, JSON.stringify(v)); }
+function saveVisitor(v) {
+  if (!isCategoryAllowed('functional')) return;
+  localStorage.setItem(VISITOR_KEY, JSON.stringify(v));
+}
 
 // ─── Icons ────────────────────────────────────────────────────────
 const ChatIcon = () => (

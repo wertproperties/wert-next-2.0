@@ -6,6 +6,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Chatbot from './components/Chatbot';
 import CookieBanner from './components/CookieBanner';
+import GoogleTagManager from './components/GoogleTagManager';
 import ImpressumPage from './pages/ImpressumPage';
 import DatenschutzPage from './pages/DatenschutzPage';
 
@@ -94,6 +95,7 @@ export default function App() {
     <LangProvider>
       <AuthProvider>
         <BrowserRouter>
+          <GoogleTagManager />
           <Layout />
         </BrowserRouter>
       </AuthProvider>
